@@ -51,6 +51,7 @@ nano .env
 SECRET_KEY=<isi-50-karakter-acak>
 DEBUG=False
 ALLOWED_HOSTS=akuntansi.domainanda.com,www.akuntansi.domainanda.com
+CSRF_TRUSTED_ORIGINS=https://akuntansi.domainanda.com,https://www.akuntansi.domainanda.com
 DB_ENGINE=django.db.backends.mysql
 DB_NAME=akuntansi_db
 DB_USER=akuntansi_user
@@ -72,6 +73,8 @@ Tanpa ini login admin & semua POST lewat HTTPS gagal (403 CSRF). Tambahkan di `c
 ```python
 CSRF_TRUSTED_ORIGINS = ["https://akuntansi.domainanda.com", "https://www.akuntansi.domainanda.com"]
 ```
+
+> Diisi lewat `.env` (`CSRF_TRUSTED_ORIGINS=https://domain,https://www.domain`), bukan edit `settings.py` — supaya `git pull` di VPS tidak conflict.
 
 ## 6. Build CSS, migrate, static
 
