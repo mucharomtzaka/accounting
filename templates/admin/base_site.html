@@ -1,0 +1,93 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+{% comment %}
+    Report view render manual, jadi each_context AdminSite tidak jalan dan
+    site_header kosong. Branding ditulis langsung dari settings.
+{% endcomment %}
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static 'css/admin-nav.css' %}?v={{ admin_css_v }}">{% endblock %}
+{% block extrahead %}
+  {{ block.super }}
+  {% if page_setting.favicon %}<link rel="icon" href="{{ page_setting.favicon.url }}">{% endif %}
+  <script src="{% static 'js/admin-menu-search.js' %}?v={{ admin_css_v }}" defer></script>
+{% endblock %}
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {% if page_setting and page_setting.pk %}{{ page_setting.title }}{% else %}{{ site_title|default:_('Django site admin') }}{% endif %}{% endblock %}
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">{% if page_setting and page_setting.pk and page_setting.logo %}<img src="{{ page_setting.logo.url }}" alt="{{ page_setting.title }}" style="height:28px;vertical-align:middle"> {% endif %}{{ admin_site_header }}</a></h1>
+{% if user.is_anonymous %}{% include "admin/color_theme_toggle.html" %}{% endif %}
+{% endblock %}
+{% block usertools %}
+  {% comment %}
+    Guard pakai user.is_staff, bukan has_permission: report view render manual
+    tanpa each_context AdminSite, jadi has_permission tidak ada di context.
+  {% endcomment %}
+  {% if user.is_active and user.is_staff %}
+    <div id="user-tools">
+      <button type="button" class="user-tools-toggle" aria-expanded="false" aria-controls="user-links">
+        <span class="user-tools-burger" aria-hidden="true"></span>
+        <span class="user-tools-toggle-name">{% firstof user.get_short_name user.get_username %}</span>
+      </button>
+      <span class="welcome-text">
+        {% block welcome-msg %}
+          {% translate 'Welcome,' %}
+          <strong>{% firstof user.get_short_name user.get_username %}</strong>.
+          {% comment %}
+            Role + group ditampilkan karena izin sebenarnya datang dari
+            auth.Group (User.role cuma label dekoratif), jadi user perlu lihat
+            grup mana yang menempel padanya.
+          {% endcomment %}
+          {% if user.get_role_display %}
+            <span class="welcome-role">{{ user.get_role_display }}{% if user.groups.all %} &middot; {{ user.groups.all|join:", " }}{% endif %}</span>
+          {% endif %}
+        {% endblock %}
+      </span>
+      <div id="user-links" class="user-drawer">
+        <div class="user-drawer-head">
+          <span class="user-drawer-identity">
+            <strong>{% firstof user.get_short_name user.get_username %}</strong>
+            <span class="user-drawer-meta">
+              {{ user.get_role_display }}{% if user.groups.all %} &middot; {{ user.groups.all|join:", " }}{% endif %}
+            </span>
+          </span>
+          <button type="button" class="user-drawer-close" aria-label="{% translate 'Close' %}">&times;</button>
+        </div>
+        {% comment %}
+  Ditulis ulang, bukan pakai {{ block.super }}: markup bawaan Django menyisipkan
+  "/" antar link yang tak perlu di drawer.
+{% endcomment %}
+{% block userlinks %}
+  {% if user.has_usable_password %}
+    <a href="{% url 'admin:password_change' %}">{% translate 'Change password' %}</a>
+  {% endif %}
+  <form id="logout-form" method="post" action="{% url 'admin:logout' %}">
+    {% csrf_token %}
+    <button type="submit">{% translate 'Log out' %}</button>
+  </form>
+  {% include "admin/color_theme_toggle.html" %}
+  {% if user.is_superuser %}
+    <a href="{% url 'admin:core_pagesetting_changelist' %}">{% translate 'Page Settings' %}</a>
+  {% endif %}
+  {% get_current_language as current_lang %}
+  {% if current_lang == 'en' %}
+    <form method="post" action="{% url 'set_language' %}" class="lang-switch">
+      {% csrf_token %}
+      <input type="hidden" name="language" value="id">
+      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+      <button type="submit">Bahasa Indonesia</button>
+    </form>
+  {% else %}
+    <form method="post" action="{% url 'set_language' %}" class="lang-switch">
+      {% csrf_token %}
+      <input type="hidden" name="language" value="en">
+      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+      <button type="submit">English</button>
+    </form>
+  {% endif %}
+{% endblock %}
+      </div>
+      <div class="user-drawer-backdrop" hidden></div>
+    </div>
+  {% endif %}
+{% endblock %}
+{% block nav-global %}
+  {{ block.super }}
+{% endblock %}

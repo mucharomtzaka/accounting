@@ -1,0 +1,120 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block extrastyle %}{{ block.super }}
+<style>
+  /* Judul sudah dirender admin lewat context `title` (block content_title),
+     jadi h1 tidak ditulis lagi di sini. */
+  .opening-balance-fields { display: flex; flex-wrap: wrap; align-items: flex-end;
+                            gap: 12px 18px; margin-bottom: 16px; }
+  .opening-balance-fields label { display: block; font-weight: 600; margin-bottom: 4px; }
+  .opening-balance-fields select,
+  .opening-balance-fields input[type=date] { min-height: 36px; padding: 6px 8px; }
+  .opening-balance-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+  .opening-balance-actions .button,
+  .opening-balance-actions button { display: inline-flex; align-items: center;
+                                    justify-content: center;
+                                    padding: 11px 22px; font-size: 15px;
+                                    min-height: 44px; line-height: 1; }
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+  <div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+    &rsaquo; <a href="{% url 'admin:app_list' app_label='gl' %}">{% translate 'General Ledger' %}</a>
+    &rsaquo; <a href="{% url 'admin:gl_accountingperiod_changelist' %}">{% translate 'Accounting Periods' %}</a>
+    &rsaquo; {% translate 'Input Opening Balance' %}
+  </div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <p class="help">
+    {% translate 'Opening balance is posted as one journal (source OPENING_BALANCE). CSV columns: kode_akun/account_code, debit, kredit/credit. Numbers may use 1.234.567,89 or 1234567.89. Total debit must equal total credit and the date must fall in an OPEN period.' %}
+  </p>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="opening-balance-fields">
+      <div>
+        <label for="id_company">{% translate 'Company' %}:</label>
+        <select name="company" id="id_company">
+          {% for c in companies %}
+            <option value="{{ c.pk }}"{% if company and c.pk == company.pk %} selected{% endif %}>
+              {{ c.company_code }} &mdash; {{ c.display_name|default:c.legal_name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="id_as_of">{% translate 'Date' %}:</label>
+        <input type="date" name="as_of" id="id_as_of" value="{{ as_of|default:'' }}">
+      </div>
+      <div>
+        <label for="id_csv_file">{% translate 'CSV file' %}:</label>
+        <input type="file" name="csv_file" id="id_csv_file" accept=".csv,text/csv">
+      </div>
+    </div>
+    <div class="opening-balance-actions">
+      <button type="submit" class="button">{% translate 'Upload and preview' %}</button>
+      <a class="button" href="?company={{ company.pk }}&amp;template=1">{% translate 'Download CSV template' %}</a>
+    </div>
+  </form>
+
+  {% if not companies %}
+    <p class="errornote">{% translate 'This user has no company access.' %}</p>
+  {% endif %}
+
+  {% if errors %}
+    <h2>{% translate 'Opening balance rejected' %}</h2>
+    <p class="errornote">{{ errors|length }} {% translate 'issues detected. No journal was created.' %}</p>
+    <ul>
+      {% for e in errors %}<li>{{ e }}</li>{% endfor %}
+    </ul>
+  {% endif %}
+
+  {% if preview %}
+    <h2>{% translate 'Preview' %}</h2>
+    <p>
+      <strong>{{ preview|length }} {% translate 'accounts' %}</strong> &mdash;
+      {% translate 'debit' %} {{ totals.debit_fmt|default:totals.debit }} / {% translate 'credit' %} {{ totals.credit_fmt|default:totals.credit }}
+      {% if totals.balanced %}
+        <span class="badge-ok">{% translate 'balanced' %}</span>
+      {% else %}
+        <span class="badge-bad">{% translate 'not balanced' %}</span>
+      {% endif %}
+    </p>
+    <table class="admin-table">
+      <thead>
+        <tr><th>{% translate 'Kode' %}</th><th>{% translate 'Account' %}</th>
+            <th class="num">{% translate 'Debit' %}</th><th class="num">{% translate 'Credit' %}</th></tr>
+      </thead>
+      <tbody>
+        {% for row in preview %}
+        <tr>
+          <td class="font-mono">{{ row.account.account_code }}</td>
+          <td>{{ row.account.account_name }}</td>
+          <td class="num">{{ row.debit_fmt|default:row.debit }}</td>
+          <td class="num">{{ row.credit_fmt|default:row.credit }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% if can_post and not errors and totals.balanced %}
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="company" value="{{ company.pk }}">
+        <input type="hidden" name="as_of" value="{{ as_of }}">
+        <input type="hidden" name="confirm" value="1">
+        <p class="submit-row opening-balance-actions">
+          <button type="submit" class="default">{% translate 'Post opening balance' %}</button>
+        </p>
+      </form>
+    {% elif not can_post %}
+      <p class="errornote">{% translate 'Change permission on accounting period is required to post opening balance.' %}</p>
+    {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

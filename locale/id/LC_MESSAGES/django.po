@@ -1,0 +1,1391 @@
+# Indonesian translations for accounting project.
+msgid ""
+msgstr ""
+"Project-Id-Version: accounting 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-05 11:39+0700\n"
+"Language: id\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ap/apps.py:8
+msgid "Accounts Payable"
+msgstr "Utang Usaha"
+
+#: ap/models.py:31 templates/reports/vendor_statement.html:13
+#: templates/reports/vendor_statement.html:35
+msgid "Supplier"
+msgstr "Pemasok"
+
+#: ap/models.py:32
+msgid "Suppliers"
+msgstr "Pemasok"
+
+#: ap/models.py:90 templates/reports/dashboard.html:148
+msgid "Supplier Bill"
+msgstr "Pemasok"
+
+#: ap/models.py:91
+msgid "Supplier Bills"
+msgstr "Tagihan Pemasok"
+
+#: ap/models.py:136
+msgid "Supplier Bill Line"
+msgstr "Baris Tagihan Pemasok"
+
+#: ap/models.py:137
+msgid "Supplier Bill Lines"
+msgstr "Baris Tagihan Pemasok"
+
+#: ap/models.py:168
+msgid "Supplier Payment"
+msgstr "Pembayaran Pemasok"
+
+#: ap/models.py:169
+msgid "Supplier Payments"
+msgstr "Pembayaran Pemasok"
+
+#: ap/models.py:188
+msgid "Supplier Payment Allocation"
+msgstr "Alokasi Pembayaran Pemasok"
+
+#: ap/models.py:189
+msgid "Supplier Payment Allocations"
+msgstr "Alokasi Pembayaran Pemasok"
+
+#: ar/apps.py:8
+msgid "Accounts Receivable"
+msgstr "Piutang Usaha"
+
+#: ar/models.py:35 templates/reports/customer_statement.html:13
+#: templates/reports/customer_statement.html:35
+msgid "Customer"
+msgstr "Pelanggan"
+
+#: ar/models.py:36
+msgid "Customers"
+msgstr "Pelanggan"
+
+#: ar/models.py:93 templates/reports/dashboard.html:147
+msgid "Customer Invoice"
+msgstr "Pelanggan"
+
+#: ar/models.py:94
+msgid "Customer Invoices"
+msgstr "Faktur Penjualan"
+
+#: ar/models.py:141
+msgid "Customer Invoice Line"
+msgstr "Baris Faktur Penjualan"
+
+#: ar/models.py:142
+msgid "Customer Invoice Lines"
+msgstr "Baris Faktur Penjualan"
+
+#: ar/models.py:179
+msgid "Customer Payment"
+msgstr "Penerimaan Pelanggan"
+
+#: ar/models.py:180
+msgid "Customer Payments"
+msgstr "Penerimaan Pelanggan"
+
+#: ar/models.py:199
+msgid "Payment Allocation"
+msgstr "Alokasi Pembayaran"
+
+#: ar/models.py:200
+msgid "Payment Allocations"
+msgstr "Alokasi Pembayaran"
+
+#: bank/apps.py:8
+msgid "Cash & Bank"
+msgstr "Kas & Bank"
+
+#: bank/models.py:31
+msgid "Bank Account"
+msgstr "Rekening Bank"
+
+#: bank/models.py:32
+msgid "Bank Accounts"
+msgstr "Rekening Bank"
+
+#: bank/models.py:83
+msgid "Bank Transaction"
+msgstr "Transaksi Bank"
+
+#: bank/models.py:84
+msgid "Bank Transactions"
+msgstr "Transaksi Bank"
+
+#: bank/models.py:114
+msgid "Bank Statement Line"
+msgstr "Baris Rekening Koran"
+
+#: bank/models.py:115
+msgid "Bank Statement Lines"
+msgstr "Baris Rekening Koran"
+
+#: bank/models.py:146
+msgid "Bank Reconciliation"
+msgstr "Rekonsiliasi Bank"
+
+#: bank/models.py:147
+msgid "Bank Reconciliations"
+msgstr "Rekonsiliasi Bank"
+
+#: consolidation/apps.py:8
+msgid "Consolidation"
+msgstr "Konsolidasi"
+
+#: consolidation/models.py:52
+msgid "Intercompany Transaction"
+msgstr "Transaksi Antar Perusahaan"
+
+#: consolidation/models.py:53
+msgid "Intercompany Transactions"
+msgstr "Transaksi Antar Perusahaan"
+
+#: consolidation/models.py:87
+msgid "Consolidation Run"
+msgstr "Proses Konsolidasi"
+
+#: consolidation/models.py:88
+msgid "Consolidation Runs"
+msgstr "Proses Konsolidasi"
+
+#: consolidation/models.py:102
+msgid "Consolidation Adjustment"
+msgstr "Penyesuaian Konsolidasi"
+
+#: consolidation/models.py:103
+msgid "Consolidation Adjustments"
+msgstr "Penyesuaian Konsolidasi"
+
+#: core/apps.py:8
+msgid "Core - Organization"
+msgstr "Core - Organisasi"
+
+#: core/budget_models.py:60 templates/reports/budget_vs_actual.html:22
+msgid "Budget"
+msgstr "Total Anggaran"
+
+#: core/budget_models.py:61
+msgid "Budgets"
+msgstr "Anggaran"
+
+#: core/finance_models.py:28
+msgid "Tax Code"
+msgstr "Kode Pajak"
+
+#: core/finance_models.py:30
+msgid "Tax Codes"
+msgstr "Kode Pajak"
+
+#: core/finance_models.py:64 templates/reports/base.html:56
+#: templates/reports/product_profitability.html:19
+msgid "Product"
+msgstr "Produk"
+
+#: core/finance_models.py:66
+msgid "Products"
+msgstr "Produk"
+
+#: core/models.py:57 templates/reports/quick_menu.html:221
+msgid "User"
+msgstr "Pengguna"
+
+#: core/models.py:58
+msgid "Users"
+msgstr "Pengguna"
+
+#: core/models.py:89 templates/reports/consolidated.html:12
+msgid "Group"
+msgstr "Grup"
+
+#: core/models.py:90
+msgid "Groups"
+msgstr "Grup"
+
+#: core/models.py:124 templates/admin/gl/opening_balance.html:41
+#: templates/core/register_company.html:102
+#: templates/reports/_company_select.html:8 templates/reports/aging.html:14
+#: templates/reports/aging.html:38 templates/reports/balance_comparison.html:23
+#: templates/reports/balance_sheet.html:23
+#: templates/reports/balance_sheet.html:42
+#: templates/reports/balance_sheet.html:61
+#: templates/reports/budget_vs_actual.html:22
+#: templates/reports/company_comparison.html:18
+#: templates/reports/dashboard.html:172
+#: templates/reports/product_profitability.html:19
+#: templates/reports/profit_loss.html:20 templates/reports/profit_loss.html:39
+#: templates/reports/profit_loss.html:58
+#: templates/reports/project_profitability.html:19
+#: templates/reports/trial_balance.html:11
+msgid "Company"
+msgstr "Perusahaan"
+
+#: core/models.py:125
+msgid "Companies"
+msgstr "Perusahaan"
+
+#: core/models.py:140 core/models.py:141
+msgid "User Company Access"
+msgstr "Akses Perusahaan Pengguna"
+
+#: core/models.py:172 templates/reports/budget_vs_actual.html:22
+msgid "Branch"
+msgstr "Cabang"
+
+#: core/models.py:173
+msgid "Branches"
+msgstr "Cabang"
+
+#: core/models.py:187 core/models.py:188
+msgid "User Branch Access"
+msgstr "Akses Cabang Pengguna"
+
+#: core/models.py:203
+msgid "Department"
+msgstr "Departemen"
+
+#: core/models.py:204
+msgid "Departments"
+msgstr "Departemen"
+
+#: core/models.py:229
+msgid "Cost Center"
+msgstr "Pusat Biaya"
+
+#: core/models.py:230
+msgid "Cost Centers"
+msgstr "Pusat Biaya"
+
+#: core/models.py:245
+msgid "Currency"
+msgstr "Mata Uang"
+
+#: core/models.py:246
+msgid "Currencies"
+msgstr "Mata Uang"
+
+#: core/models.py:261
+msgid "Exchange Rate"
+msgstr "Kurs"
+
+#: core/models.py:262
+msgid "Exchange Rates"
+msgstr "Kurs"
+
+#: core/models.py:282
+msgid "Approval Limit"
+msgstr "Batas Persetujuan"
+
+#: core/models.py:283
+msgid "Approval Limits"
+msgstr "Batas Persetujuan"
+
+#: core/models.py:307
+msgid "Audit Log"
+msgstr "Log Audit"
+
+#: core/models.py:308
+msgid "Audit Logs"
+msgstr "Log Audit"
+
+#: core/models.py:324
+msgid "Page Setting"
+msgstr ""
+
+#: core/models.py:325 templates/admin/base_site.html:86
+msgid "Page Settings"
+msgstr "Pengaturan Halaman"
+
+#: core/project_models.py:44 templates/reports/base.html:53
+#: templates/reports/project_profitability.html:19
+msgid "Project"
+msgstr "Proyek"
+
+#: core/project_models.py:45 templates/reports/project_profitability.html:13
+msgid "Projects"
+msgstr "Proyek"
+
+#: core/project_models.py:74
+msgid "Project Cost"
+msgstr "Biaya Proyek"
+
+#: core/project_models.py:75
+msgid "Project Costs"
+msgstr "Biaya Proyek"
+
+#: core/project_models.py:101
+msgid "Project Milestone"
+msgstr "Tonggak Proyek"
+
+#: core/project_models.py:102
+msgid "Project Milestones"
+msgstr "Tonggak Proyek"
+
+#: core/project_models.py:142
+msgid "Project Billing"
+msgstr "Penagihan Proyek"
+
+#: core/project_models.py:143
+msgid "Project Billings"
+msgstr "Penagihan Proyek"
+
+#: core/tests.py:163 gl/apps.py:8 templates/admin/gl/opening_balance.html:25
+#: templates/reports/base.html:48 templates/reports/quick_menu.html:73
+msgid "General Ledger"
+msgstr "Buku Besar"
+
+#: core/tests.py:164 gl/models.py:218
+msgid "Journal Entries"
+msgstr "Jurnal"
+
+#: fa/apps.py:8 fa/models.py:98 templates/reports/quick_menu.html:135
+msgid "Fixed Assets"
+msgstr "Aset Tetap"
+
+#: fa/models.py:45
+msgid "Asset Category"
+msgstr "Kategori Aset"
+
+#: fa/models.py:46
+msgid "Asset Categories"
+msgstr "Kategori Aset"
+
+#: fa/models.py:97
+msgid "Fixed Asset"
+msgstr "Aset Tetap"
+
+#: fa/models.py:138
+msgid "Asset Depreciation"
+msgstr "Penyusutan Aset"
+
+#: fa/models.py:139
+msgid "Asset Depreciations"
+msgstr "Penyusutan Aset"
+
+#: fa/models.py:165
+msgid "Asset Transaction"
+msgstr "Transaksi Aset"
+
+#: fa/models.py:166
+msgid "Asset Transactions"
+msgstr "Transaksi Aset"
+
+#: gl/admin.py:342 templates/admin/gl/accountingperiod/change_list.html:7
+#: templates/admin/gl/opening_balance.html:27
+msgid "Input Opening Balance"
+msgstr "Input Saldo Awal"
+
+#: gl/models.py:64 templates/admin/gl/opening_balance.html:90
+#: templates/reports/balance_comparison.html:25
+#: templates/reports/balance_sheet.html:23
+#: templates/reports/balance_sheet.html:42
+#: templates/reports/balance_sheet.html:61
+#: templates/reports/budget_vs_actual.html:22
+#: templates/reports/general_ledger.html:13
+#: templates/reports/profit_loss.html:20 templates/reports/profit_loss.html:39
+#: templates/reports/profit_loss.html:58
+#: templates/reports/trial_balance.html:12
+msgid "Account"
+msgstr "Akun"
+
+#: gl/models.py:65
+msgid "Accounts"
+msgstr "Akun"
+
+#: gl/models.py:93
+msgid "Fiscal Year"
+msgstr "Tahun Buku"
+
+#: gl/models.py:94
+msgid "Fiscal Years"
+msgstr "Tahun Buku"
+
+#: gl/models.py:129
+msgid "Accounting Period"
+msgstr "Periode Akuntansi"
+
+#: gl/models.py:130 templates/admin/gl/opening_balance.html:26
+msgid "Accounting Periods"
+msgstr "Periode Akuntansi"
+
+#: gl/models.py:217 templates/reports/dashboard.html:149
+msgid "Journal Entry"
+msgstr "Jurnal"
+
+#: gl/models.py:328
+msgid "Journal Line"
+msgstr "Baris Jurnal"
+
+#: gl/models.py:329
+msgid "Journal Lines"
+msgstr "Baris Jurnal"
+
+#: gl/models.py:357
+msgid "Journal Template"
+msgstr "Template Jurnal"
+
+#: gl/models.py:358
+msgid "Journal Templates"
+msgstr "Template Jurnal"
+
+#: gl/models.py:375
+msgid "Journal Template Line"
+msgstr "Baris Template Jurnal"
+
+#: gl/models.py:376
+msgid "Journal Template Lines"
+msgstr "Baris Template Jurnal"
+
+#: gl/models.py:401
+msgid "Account Mapping"
+msgstr "Pemetaan Akun"
+
+#: gl/models.py:402
+msgid "Account Mappings"
+msgstr "Pemetaan Akun"
+
+#: inventory/apps.py:8
+msgid "Inventory Accounting"
+msgstr "Akuntansi Persediaan"
+
+#: inventory/models.py:34
+msgid "Warehouse"
+msgstr "Gudang"
+
+#: inventory/models.py:35
+msgid "Warehouses"
+msgstr "Gudang"
+
+#: inventory/models.py:64
+msgid "Inventory"
+msgstr "Persediaan"
+
+#: inventory/models.py:65
+msgid "Inventories"
+msgstr "Persediaan"
+
+#: inventory/models.py:105
+msgid "Inventory Transaction"
+msgstr "Transaksi Persediaan"
+
+#: inventory/models.py:106
+msgid "Inventory Transactions"
+msgstr "Transaksi Persediaan"
+
+#: inventory/models.py:134
+msgid "Inventory Cost Layer"
+msgstr "Lapisan Biaya Persediaan"
+
+#: inventory/models.py:135
+msgid "Inventory Cost Layers"
+msgstr "Lapisan Biaya Persediaan"
+
+#: inventory/models.py:173 templates/reports/quick_menu.html:143
+msgid "Stock Opname"
+msgstr "Opname Stok"
+
+#: inventory/models.py:174
+msgid "Stock Opnames"
+msgstr "Opname Stok"
+
+#: inventory/models.py:199
+msgid "Stock Opname Line"
+msgstr "Baris Opname Stok"
+
+#: inventory/models.py:200
+msgid "Stock Opname Lines"
+msgstr "Baris Opname Stok"
+
+#: notify/apps.py:8 notify/models.py:58 templates/reports/quick_menu.html:159
+msgid "Notifications"
+msgstr "Notifikasi"
+
+#: notify/models.py:57
+msgid "Notification"
+msgstr "Notifikasi"
+
+#: reports/apps.py:8
+msgid "Financial Reports"
+msgstr "Laporan Keuangan"
+
+#: templates/admin/_menu_search.html:8 templates/admin/_menu_search.html:9
+msgid "Search menu"
+msgstr "Cari menu"
+
+#: templates/admin/_menu_search.html:10
+msgid "No matching menu."
+msgstr "Tidak ada menu yang cocok."
+
+#: templates/admin/app_index.html:9 templates/admin/gl/opening_balance.html:24
+msgid "Home"
+msgstr "Beranda"
+
+#: templates/admin/app_index.html:16
+msgid "All applications"
+msgstr "Semua aplikasi"
+
+#: templates/admin/app_index.html:35 templates/admin/index.html:81
+msgid "You don’t have permission to view or edit anything."
+msgstr "Anda tidak punya izin untuk melihat atau mengubah apa pun."
+
+#: templates/admin/base_site.html:13
+msgid "Django site admin"
+msgstr ""
+
+#: templates/admin/base_site.html:32
+msgid "Welcome,"
+msgstr ""
+
+#: templates/admin/base_site.html:53
+msgid "Close"
+msgstr ""
+
+#: templates/admin/base_site.html:61
+msgid "Change password"
+msgstr ""
+
+#: templates/admin/base_site.html:65
+msgid "Log out"
+msgstr ""
+
+#: templates/admin/gl/opening_balance.html:34
+msgid ""
+"Opening balance is posted as one journal (source OPENING_BALANCE). CSV "
+"columns: kode_akun/account_code, debit, kredit/credit. Numbers may use "
+"1.234.567,89 or 1234567.89. Total debit must equal total credit and the date "
+"must fall in an OPEN period."
+msgstr ""
+"Saldo awal diposting sebagai satu jurnal (sumber OPENING_BALANCE). Format "
+"CSV: kolom kode_akun/account_code, debit, kredit/credit. Angka boleh "
+"1.234.567,89 atau 1234567.89. Total debit harus sama dengan total credit, "
+"dan tanggal harus di period yang masih OPEN."
+
+#: templates/admin/gl/opening_balance.html:51
+msgid "Date"
+msgstr "Tanggal"
+
+#: templates/admin/gl/opening_balance.html:55
+msgid "CSV file"
+msgstr "File CSV"
+
+#: templates/admin/gl/opening_balance.html:60
+msgid "Upload and preview"
+msgstr "Upload dan preview"
+
+#: templates/admin/gl/opening_balance.html:61
+msgid "Download CSV template"
+msgstr "Unduh template CSV"
+
+#: templates/admin/gl/opening_balance.html:66
+msgid "This user has no company access."
+msgstr "User ini tidak punya akses ke company mana pun."
+
+#: templates/admin/gl/opening_balance.html:70
+msgid "Opening balance rejected"
+msgstr "Saldo awal ditolak"
+
+#: templates/admin/gl/opening_balance.html:71
+msgid "issues detected. No journal was created."
+msgstr "masalah. Tidak ada jurnal yang dibuat."
+
+#: templates/admin/gl/opening_balance.html:78
+msgid "Preview"
+msgstr "Pratinjau"
+
+#: templates/admin/gl/opening_balance.html:80
+msgid "accounts"
+msgstr "akun"
+
+#: templates/admin/gl/opening_balance.html:81
+#, fuzzy
+#| msgid "Debit"
+msgid "debit"
+msgstr "Debit"
+
+#: templates/admin/gl/opening_balance.html:81
+#, fuzzy
+#| msgid "Kredit"
+msgid "credit"
+msgstr "Kredit"
+
+#: templates/admin/gl/opening_balance.html:83
+msgid "balanced"
+msgstr "balance"
+
+#: templates/admin/gl/opening_balance.html:85
+msgid "not balanced"
+msgstr "tidak balance"
+
+#: templates/admin/gl/opening_balance.html:90
+msgid "Kode"
+msgstr ""
+
+#: templates/admin/gl/opening_balance.html:91
+#: templates/reports/customer_statement.html:46
+#: templates/reports/general_ledger.html:34
+#: templates/reports/trial_balance.html:13
+msgid "Debit"
+msgstr "Debit"
+
+#: templates/admin/gl/opening_balance.html:91
+#: templates/reports/general_ledger.html:34
+#: templates/reports/trial_balance.html:14
+msgid "Credit"
+msgstr "Kredit"
+
+#: templates/admin/gl/opening_balance.html:112
+msgid "Post opening balance"
+msgstr "Posting saldo awal"
+
+#: templates/admin/gl/opening_balance.html:116
+msgid ""
+"Change permission on accounting period is required to post opening balance."
+msgstr "Hak ubah period diperlukan untuk posting saldo awal."
+
+#: templates/admin/index.html:27 templates/admin/index.html:42
+#, fuzzy
+#| msgid "Company"
+msgid "Company aktif"
+msgstr "Perusahaan"
+
+#: templates/admin/index.html:36
+#, fuzzy
+#| msgid "Semua Company"
+msgid "Belum ada company"
+msgstr "Perusahaan"
+
+#: templates/admin/index.html:37
+msgid "Daftarkan company"
+msgstr ""
+
+#: templates/admin/index.html:48
+msgid "Ganti"
+msgstr ""
+
+#: templates/admin/index.html:66
+msgid "Application menu"
+msgstr "Menu Aplikasi"
+
+#: templates/admin/login.html:59 templates/core/register_company.html:83
+#, fuzzy
+#| msgid "Tampilkan"
+msgid "Tampilkan password"
+msgstr "Tampilkan"
+
+#: templates/admin/login.html:60 templates/core/register_company.html:84
+msgid "Sembunyikan password"
+msgstr ""
+
+#: templates/admin/login.html:75
+msgid "Demo accounts"
+msgstr "Akun demo"
+
+#: templates/admin/login.html:78
+#, python-format
+msgid ""
+"All demo accounts use password %(password)s. Click a card to fill the form."
+msgstr ""
+"Semua akun demo memakai password %(password)s. Klik kartu untuk mengisi form."
+
+#: templates/admin/login.html:94
+#, fuzzy
+#| msgid "AR Aging per Company"
+msgid "Register new company"
+msgstr "Umur Piutang per Perusahaan"
+
+#: templates/core/register_company.html:4
+#: templates/core/register_company.html:89
+#, fuzzy
+#| msgid "AR Aging per Company"
+msgid "Register Company"
+msgstr "Umur Piutang per Perusahaan"
+
+#: templates/core/register_company.html:92
+msgid ""
+"Buat company baru beserta akun owner. Owner akan mendapat akses ke company "
+"ini saja."
+msgstr ""
+
+#: templates/core/register_company.html:104
+#, fuzzy
+#| msgid "Ownership"
+msgid "Owner"
+msgstr "Kepemilikan"
+
+#: templates/core/register_company.html:117
+msgid "Create company & account"
+msgstr ""
+
+#: templates/core/register_company.html:122
+msgid "Back to login"
+msgstr ""
+
+#: templates/reports/_company_select.html:10
+msgid "Semua Company"
+msgstr "Perusahaan"
+
+#: templates/reports/aging.html:11
+msgid "Accounts Receivable Aging"
+msgstr "Penutupan Piutang"
+
+#: templates/reports/aging.html:14 templates/reports/aging.html:38
+#: templates/reports/dashboard.html:172
+msgid "Current"
+msgstr "Lancar"
+
+#: templates/reports/aging.html:14 templates/reports/aging.html:38
+#: templates/reports/balance_comparison.html:45
+#: templates/reports/cash_flow.html:100
+msgid "Total"
+msgstr "Total"
+
+#: templates/reports/aging.html:35
+msgid "Accounts Payable Aging"
+msgstr "Penutupan Utang"
+
+#: templates/reports/balance_comparison.html:5
+#, python-format
+msgid "Balance as of %(start)s compared to %(end)s"
+msgstr "Saldo per %(start)s dibanding %(end)s"
+
+#: templates/reports/balance_comparison.html:16 templates/reports/base.html:49
+msgid "Comparative Balance"
+msgstr "Neraca Banding"
+
+#: templates/reports/balance_comparison.html:18
+msgid "Cumulative balance per account at two dates"
+msgstr "Saldo kumulatif per akun pada dua tanggal"
+
+#: templates/reports/balance_comparison.html:24
+msgid "Code"
+msgstr "Kode"
+
+#: templates/reports/balance_comparison.html:28
+msgid "Change"
+msgstr "Perubahan"
+
+#: templates/reports/balance_sheet.html:10 templates/reports/dashboard.html:46
+msgid "Total Assets"
+msgstr "Total Aset"
+
+#: templates/reports/balance_sheet.html:11
+msgid "Total Liabilities"
+msgstr "Total Kewajiban"
+
+#: templates/reports/balance_sheet.html:12
+msgid "Total Equity"
+msgstr "Total Ekuitas"
+
+#: templates/reports/balance_sheet.html:12
+msgid "Termasuk laba periode berjalan"
+msgstr "Termasuk laba periode berjalan"
+
+#: templates/reports/balance_sheet.html:14
+msgid "Check"
+msgstr "Periksa"
+
+#: templates/reports/balance_sheet.html:16 templates/reports/dashboard.html:49
+msgid "Tidak balance"
+msgstr "Tidak balance"
+
+#: templates/reports/balance_sheet.html:21
+msgid "Assets"
+msgstr "Aset"
+
+#: templates/reports/balance_sheet.html:23
+#: templates/reports/balance_sheet.html:42
+#: templates/reports/balance_sheet.html:61
+#: templates/reports/profit_loss.html:20 templates/reports/profit_loss.html:39
+#: templates/reports/profit_loss.html:58
+msgid "Amount"
+msgstr "Akun"
+
+#: templates/reports/balance_sheet.html:35
+msgid "TOTAL ASSETS"
+msgstr "TOTAL ASET"
+
+#: templates/reports/balance_sheet.html:40
+msgid "Liabilities"
+msgstr "Kewajiban"
+
+#: templates/reports/balance_sheet.html:54
+msgid "TOTAL LIABILITIES"
+msgstr "TOTAL KEWAJIBAN"
+
+#: templates/reports/balance_sheet.html:59
+msgid "Equity"
+msgstr "Ekuitas"
+
+#: templates/reports/balance_sheet.html:78
+msgid "TOTAL EQUITY"
+msgstr "TOTAL EKUITAS"
+
+#: templates/reports/base.html:36
+msgid "Excel (CSV)"
+msgstr ""
+
+#: templates/reports/base.html:37
+msgid "Print"
+msgstr ""
+
+#: templates/reports/base.html:43 templates/reports/quick_menu.html:36
+msgid "Dashboard"
+msgstr "Dasbor Keuangan"
+
+#: templates/reports/base.html:44 templates/reports/quick_menu.html:49
+msgid "Trial Balance"
+msgstr "Neraca Saldo"
+
+#: templates/reports/base.html:46 templates/reports/quick_menu.html:61
+msgid "Balance Sheet"
+msgstr "Neraca"
+
+#: templates/reports/base.html:47 templates/reports/cash_flow.html:42
+#: templates/reports/quick_menu.html:67
+msgid "Cash Flow"
+msgstr "Arus Kas"
+
+#: templates/reports/base.html:51
+msgid "Company Comparison"
+msgstr "Perbandingan Perusahaan"
+
+#: templates/reports/base.html:52 templates/reports/company_comparison.html:53
+msgid "Consolidated"
+msgstr "Pendapatan Konsolidasi"
+
+#: templates/reports/base.html:54 templates/reports/quick_menu.html:167
+msgid "Budget vs Actual"
+msgstr "Anggaran vs Aktual"
+
+#: templates/reports/base.html:55 templates/reports/quick_menu.html:197
+msgid "Cost Accounting"
+msgstr "Akuntansi Biaya"
+
+#: templates/reports/base.html:57 templates/reports/quick_menu.html:205
+msgid "Customer Statement"
+msgstr "Laporan Pelanggan"
+
+#: templates/reports/base.html:58 templates/reports/quick_menu.html:213
+msgid "Vendor Statement"
+msgstr "Laporan Pemasok"
+
+#: templates/reports/base.html:66 templates/reports/consolidated.html:20
+#: templates/reports/cost_accounting.html:21
+#: templates/reports/customer_statement.html:22
+#: templates/reports/dashboard.html:21 templates/reports/general_ledger.html:21
+#: templates/reports/vendor_statement.html:22
+msgid "Dari"
+msgstr "Dari"
+
+#: templates/reports/base.html:67 templates/reports/consolidated.html:24
+#: templates/reports/cost_accounting.html:25
+#: templates/reports/customer_statement.html:26
+#: templates/reports/dashboard.html:22 templates/reports/general_ledger.html:22
+#: templates/reports/vendor_statement.html:26
+msgid "Sampai"
+msgstr "Sampai"
+
+#: templates/reports/base.html:68 templates/reports/consolidated.html:27
+#: templates/reports/cost_accounting.html:28
+#: templates/reports/dashboard.html:23
+msgid "Terapkan"
+msgstr "Terapkan"
+
+#: templates/reports/budget_vs_actual.html:9
+msgid "Total Budget"
+msgstr "Total Anggaran"
+
+#: templates/reports/budget_vs_actual.html:10
+msgid "Total Actual"
+msgstr "Total Aktual"
+
+#: templates/reports/budget_vs_actual.html:11
+#: templates/reports/budget_vs_actual.html:22
+msgid "Variance"
+msgstr "Selisih"
+
+#: templates/reports/budget_vs_actual.html:14
+#, python-format
+msgid "Variance %%"
+msgstr "Selisih"
+
+#: templates/reports/budget_vs_actual.html:22
+msgid "Periode"
+msgstr "Periode"
+
+#: templates/reports/budget_vs_actual.html:22
+msgid "Actual"
+msgstr "Total Aktual"
+
+#: templates/reports/budget_vs_actual.html:42
+#: templates/reports/cost_accounting.html:63
+#: templates/reports/product_profitability.html:40
+#: templates/reports/project_profitability.html:47
+#: templates/reports/trial_balance.html:34
+msgid "TOTAL"
+msgstr "TOTAL"
+
+#: templates/reports/cash_flow.html:23
+msgid "Net Cash"
+msgstr "Kas Bersih"
+
+#: templates/reports/cash_flow.html:33
+msgid "Cash Flow Summary"
+msgstr "Ringkasan Arus Kas"
+
+#: templates/reports/cash_flow.html:37
+msgid "Cash & Bank at Beginning"
+msgstr "Kas & Bank Awal Periode"
+
+#: templates/reports/cash_flow.html:47
+msgid "Increase/(Decrease) in Cash"
+msgstr "Kenaikan/(Penurunan) Kas"
+
+#: templates/reports/cash_flow.html:51
+msgid "Cash & Bank at End"
+msgstr "Kas & Bank Akhir Periode"
+
+#: templates/reports/cash_flow.html:58
+msgid "Transfers between cash accounts (info, excluded from net)"
+msgstr "Mutasi antar rekening kas (info, tidak dihitung di net)"
+
+#: templates/reports/cash_flow.html:59
+msgid "Cash In"
+msgstr "Masuk"
+
+#: templates/reports/cash_flow.html:60
+msgid "Cash Out"
+msgstr "Keluar"
+
+#: templates/reports/cash_flow.html:80
+#: templates/reports/customer_statement.html:46
+#: templates/reports/general_ledger.html:34
+#: templates/reports/vendor_statement.html:46
+msgid "Tanggal"
+msgstr "Tanggal"
+
+#: templates/reports/cash_flow.html:81 templates/reports/general_ledger.html:34
+msgid "Journal"
+msgstr "Jurnal"
+
+#: templates/reports/cash_flow.html:82
+#: templates/reports/customer_statement.html:46
+#: templates/reports/general_ledger.html:34
+#: templates/reports/vendor_statement.html:46
+msgid "Deskripsi"
+msgstr "Deskripsi"
+
+#: templates/reports/cash_flow.html:83
+msgid "Akun Kas/Bank"
+msgstr ""
+
+#: templates/reports/cash_flow.html:84
+msgid "Masuk"
+msgstr ""
+
+#: templates/reports/cash_flow.html:85
+msgid "Keluar"
+msgstr ""
+
+#: templates/reports/company_comparison.html:9
+msgid "Angka dikonversi ke reporting currency"
+msgstr "Angka dikonversi ke reporting currency"
+
+#: templates/reports/company_comparison.html:18
+msgid "Base Currency"
+msgstr "Mata Uang Dasar"
+
+#: templates/reports/company_comparison.html:18
+msgid "Kurs"
+msgstr "Kurs"
+
+#: templates/reports/company_comparison.html:19
+#: templates/reports/cost_accounting.html:44
+#: templates/reports/dashboard.html:78 templates/reports/dashboard.html:94
+#: templates/reports/product_profitability.html:19
+#: templates/reports/profit_loss.html:10 templates/reports/profit_loss.html:18
+#: templates/reports/project_profitability.html:19
+msgid "Revenue"
+msgstr "Pendapatan"
+
+#: templates/reports/company_comparison.html:19
+#: templates/reports/cost_accounting.html:44
+#: templates/reports/product_profitability.html:19
+#: templates/reports/profit_loss.html:11 templates/reports/profit_loss.html:37
+msgid "COGS"
+msgstr "HPP"
+
+#: templates/reports/company_comparison.html:20
+#: templates/reports/consolidated.html:41
+#: templates/reports/cost_accounting.html:44
+#: templates/reports/dashboard.html:36 templates/reports/dashboard.html:94
+#: templates/reports/product_profitability.html:19
+#: templates/reports/profit_loss.html:12
+msgid "Gross Profit"
+msgstr "Laba Kotor"
+
+#: templates/reports/company_comparison.html:20
+#: templates/reports/cost_accounting.html:44
+#: templates/reports/dashboard.html:79 templates/reports/dashboard.html:94
+msgid "Expense"
+msgstr "Total Beban"
+
+#: templates/reports/company_comparison.html:20
+#: templates/reports/consolidated.html:42
+#: templates/reports/consolidated.html:54 templates/reports/dashboard.html:41
+#: templates/reports/dashboard.html:94 templates/reports/profit_loss.html:14
+msgid "Net Profit"
+msgstr "Laba Bersih"
+
+#: templates/reports/company_comparison.html:52
+msgid "belum"
+msgstr "belum"
+
+#: templates/reports/consolidated.html:39
+msgid "Consolidated Revenue"
+msgstr "Pendapatan Konsolidasi"
+
+#: templates/reports/consolidated.html:44
+msgid "Non-Controlling Interest"
+msgstr "Kepentingan Non-Pengendali"
+
+#: templates/reports/consolidated.html:45
+msgid "dipotong dari laba group"
+msgstr "dipotong dari laba group"
+
+#: templates/reports/consolidated.html:46
+msgid "Net Profit (Group attributable)"
+msgstr "Laba Bersih (milik grup)"
+
+#: templates/reports/consolidated.html:51
+msgid "Non-Controlling Interest Detail"
+msgstr "Rincian Kepentingan Non-Pengendali"
+
+#: templates/reports/consolidated.html:54
+msgid "Anak Perusahaan"
+msgstr "Anak Perusahaan"
+
+#: templates/reports/consolidated.html:54
+msgid "Ownership"
+msgstr "Kepemilikan"
+
+#: templates/reports/consolidated.html:54
+#, python-format
+msgid "Minority %%"
+msgstr "Minoritas %%"
+
+#: templates/reports/consolidated.html:54
+msgid "Net Profit (local)"
+msgstr "Laba Bersih"
+
+#: templates/reports/consolidated.html:54
+msgid "NCI"
+msgstr "NCI"
+
+#: templates/reports/consolidated.html:72
+msgid "TOTAL NCI"
+msgstr "TOTAL KNP"
+
+#: templates/reports/consolidated.html:80
+msgid "Intercompany Exceptions"
+msgstr "Pengecualian Antar Perusahaan"
+
+#: templates/reports/consolidated.html:83
+msgid "Tipe"
+msgstr "Tipe"
+
+#: templates/reports/consolidated.html:83
+msgid "Transaksi"
+msgstr "Transaksi"
+
+#: templates/reports/consolidated.html:83
+msgid "Keterangan"
+msgstr "Keterangan"
+
+#: templates/reports/cost_accounting.html:13
+msgid "Dimensi"
+msgstr "Dimensi"
+
+#: templates/reports/cost_accounting.html:32
+#: templates/reports/product_profitability.html:9
+#: templates/reports/project_profitability.html:9
+msgid "Total Revenue"
+msgstr "Total Pendapatan"
+
+#: templates/reports/cost_accounting.html:33
+#: templates/reports/product_profitability.html:10
+msgid "Total COGS"
+msgstr "Total HPP"
+
+#: templates/reports/cost_accounting.html:34
+msgid "Total Expense"
+msgstr "Total Beban"
+
+#: templates/reports/cost_accounting.html:35
+#: templates/reports/project_profitability.html:11
+msgid "Total Profit"
+msgstr "Total Laba"
+
+#: templates/reports/cost_accounting.html:44
+#: templates/reports/project_profitability.html:19
+msgid "Profit"
+msgstr "Laba Bersih"
+
+#: templates/reports/cost_accounting.html:44
+#: templates/reports/product_profitability.html:19
+#: templates/reports/project_profitability.html:19
+msgid "Margin"
+msgstr "Margin"
+
+#: templates/reports/customer_statement.html:29
+#: templates/reports/general_ledger.html:23
+#: templates/reports/vendor_statement.html:29
+msgid "Tampilkan"
+msgstr "Tampilkan"
+
+#: templates/reports/customer_statement.html:38
+#: templates/reports/vendor_statement.html:38
+msgid "Closing Balance"
+msgstr "Saldo Akhir"
+
+#: templates/reports/customer_statement.html:46
+#: templates/reports/product_profitability.html:19
+#: templates/reports/vendor_statement.html:46
+msgid "Type"
+msgstr "Tipe"
+
+#: templates/reports/customer_statement.html:46
+#: templates/reports/vendor_statement.html:46
+msgid "Referensi"
+msgstr "Referensi"
+
+#: templates/reports/customer_statement.html:46
+msgid "Kredit"
+msgstr "Kredit"
+
+#: templates/reports/customer_statement.html:46
+#: templates/reports/general_ledger.html:34
+#: templates/reports/vendor_statement.html:46
+msgid "Saldo"
+msgstr "Saldo"
+
+#: templates/reports/customer_statement.html:65
+#: templates/reports/vendor_statement.html:65
+msgid "CLOSING BALANCE"
+msgstr "SALDO AKHIR"
+
+#: templates/reports/dashboard.html:32
+msgid "Revenue (YTD)"
+msgstr "Pendapatan (YTD)"
+
+#: templates/reports/dashboard.html:48
+msgid "Balanced"
+msgstr "Selisih"
+
+#: templates/reports/dashboard.html:55
+msgid "AR Outstanding"
+msgstr "Piutang Belum Tertagih"
+
+#: templates/reports/dashboard.html:60
+msgid "AP Outstanding"
+msgstr "Utang Belum Dibayar"
+
+#: templates/reports/dashboard.html:65
+msgid "Net Cash Flow (YTD)"
+msgstr "Arus Kas Bersih (YTD)"
+
+#: templates/reports/dashboard.html:69
+msgid "Total Equity + Laba"
+msgstr "Total Ekuitas + Laba"
+
+#: templates/reports/dashboard.html:76
+msgid "Revenue vs Expense - 12 Bulan"
+msgstr "Pendapatan vs Beban - 12 Bulan"
+
+#: templates/reports/dashboard.html:94
+msgid "Bulan"
+msgstr "Bulan"
+
+#: templates/reports/dashboard.html:111
+msgid "Top Expense (YTD)"
+msgstr "Beban Terbesar (YTD)"
+
+#: templates/reports/dashboard.html:126
+msgid "AR Aging (Total)"
+msgstr "Umur Piutang (Total)"
+
+#: templates/reports/dashboard.html:145
+msgid "Draft - perlu action"
+msgstr "Draft - perlu ditindaklanjuti"
+
+#: templates/reports/dashboard.html:158
+msgid "Open AR"
+msgstr "Buka AR"
+
+#: templates/reports/dashboard.html:161
+msgid "Open AP"
+msgstr "Buka AP"
+
+#: templates/reports/dashboard.html:164
+msgid "Open GL"
+msgstr "Buka GL"
+
+#: templates/reports/dashboard.html:170
+msgid "AR Aging per Company"
+msgstr "Umur Piutang per Perusahaan"
+
+#: templates/reports/general_ledger.html:34
+msgid "Source"
+msgstr "Sumber"
+
+#: templates/reports/general_ledger.html:38
+#: templates/reports/quick_menu.html:95
+msgid "Opening Balance"
+msgstr "Saldo Awal"
+
+#: templates/reports/product_profitability.html:11
+msgid "Total Gross Profit"
+msgstr "Total Laba Kotor"
+
+#: templates/reports/product_profitability.html:19
+msgid "Price"
+msgstr "Harga"
+
+#: templates/reports/profit_loss.html:13 templates/reports/profit_loss.html:56
+msgid "Operating Expense"
+msgstr "Beban Operasional"
+
+#: templates/reports/profit_loss.html:32
+msgid "TOTAL REVENUE"
+msgstr "TOTAL PENDAPATAN"
+
+#: templates/reports/profit_loss.html:51
+msgid "TOTAL COGS"
+msgstr "Total HPP"
+
+#: templates/reports/profit_loss.html:70
+msgid "TOTAL EXPENSE"
+msgstr "TOTAL BEBAN"
+
+#: templates/reports/project_profitability.html:10
+msgid "Total Cost"
+msgstr "Total Biaya"
+
+#: templates/reports/project_profitability.html:19
+msgid "Status"
+msgstr "Status"
+
+#: templates/reports/project_profitability.html:19
+msgid "Contract"
+msgstr "Kontrak"
+
+#: templates/reports/project_profitability.html:19
+msgid "Cost"
+msgstr "Biaya"
+
+#: templates/reports/quick_menu.html:15
+msgid "Quick menu"
+msgstr "Menu Cepat"
+
+#: templates/reports/quick_menu.html:29
+msgid "Master COA"
+msgstr "Bagan Akun"
+
+#: templates/reports/quick_menu.html:81
+msgid "Aging"
+msgstr "Umur Piutang/Hutang"
+
+#: templates/reports/quick_menu.html:89
+msgid "Periods"
+msgstr "Periode"
+
+#: templates/reports/quick_menu.html:103
+msgid "Journals"
+msgstr "Jurnal"
+
+#: templates/reports/quick_menu.html:111
+msgid "Invoices"
+msgstr "Faktur Penjualan"
+
+#: templates/reports/quick_menu.html:119
+msgid "Bills"
+msgstr "Tagihan Pemasok"
+
+#: templates/reports/quick_menu.html:127
+msgid "Bank Rec"
+msgstr "Rekonsiliasi Bank"
+
+#: templates/reports/quick_menu.html:151
+msgid "Approvals"
+msgstr "Persetujuan"
+
+#: templates/reports/quick_menu.html:175
+msgid "Project P&L"
+msgstr "Laba Rugi Proyek"
+
+#: templates/reports/quick_menu.html:183
+msgid "Product P&L"
+msgstr "Laba Rugi Produk"
+
+#: templates/reports/quick_menu.html:191
+msgid "Company Compare"
+msgstr "Perbandingan Perusahaan"
+
+#: templates/reports/trial_balance.html:41
+msgid "TIDAK SEIMBANG"
+msgstr "TIDAK SEIMBANG"
+
+#: workflow/apps.py:8 workflow/models.py:35
+msgid "Approval Workflow"
+msgstr "Alur Persetujuan"
+
+#: workflow/models.py:36
+msgid "Approval Workflows"
+msgstr "Alur Persetujuan"
+
+#: workflow/models.py:55
+msgid "Approval Step"
+msgstr "Langkah Persetujuan"
+
+#: workflow/models.py:56
+msgid "Approval Steps"
+msgstr "Langkah Persetujuan"
+
+#: workflow/models.py:86
+msgid "Approval Request"
+msgstr "Permintaan Persetujuan"
+
+#: workflow/models.py:87
+msgid "Approval Requests"
+msgstr "Permintaan Persetujuan"
+
+#~ msgid "Financial Dashboard"
+#~ msgstr "Dasbor Keuangan"
+
+#~ msgid "Counted"
+#~ msgstr "Sudah Dihitung"
+
+#~ msgid "Posted"
+#~ msgstr "Diposting"
+
+#~ msgid "Cancelled"
+#~ msgstr "Dibatalkan"
+
+#~ msgid "Stock Adjustment In"
+#~ msgstr "Penyesuaian Stok Masuk"
+
+#~ msgid "Stock Adjustment Out"
+#~ msgstr "Penyesuaian Stok Keluar"
+
+#~ msgid "Goods Receipt"
+#~ msgstr "Penerimaan Barang"
+
+#~ msgid "Goods Issue"
+#~ msgstr "Pengeluaran Barang"

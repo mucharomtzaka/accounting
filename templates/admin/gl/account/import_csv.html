@@ -1,0 +1,182 @@
+{% extends "admin/base_site.html" %}
+
+{% block breadcrumbs %}
+  <div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">Home</a>
+    &rsaquo; <a href="{% url 'admin:app_list' app_label='gl' %}">GL</a>
+    &rsaquo; <a href="{% url 'admin:gl_account_changelist' %}">Accounts</a>
+    &rsaquo; Import / Export CSV
+  </div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+
+  <ul class="object-tools">
+    <li>
+      <a href="{% url 'admin:gl_account_changelist' %}" class="changelink">Kembali ke daftar akun</a>
+    </li>
+    <li>
+      <a href="{% url 'admin:gl_account_template_csv' %}" class="downloadlink">Unduh template CSV</a>
+    </li>
+    {% if company %}
+      <li>
+        <a href="{% url 'admin:gl_account_export_csv' %}?company_id={{ company.pk }}"
+           class="downloadlink">Export akun company {{ company.company_code }}</a>
+      </li>
+    {% endif %}
+  </ul>
+
+  <h1>Import / Export Chart of Accounts</h1>
+  <p class="help">
+    Format file CSV dengan header. Nama kolom boleh Indonesia atau Inggris, urutannya bebas:
+    <code>kode_akun</code>, <code>nama_akun</code>, <code>kategori</code>,
+    <code>tipe_akun</code>, <code>saldo_normal</code>, <code>kode_induk</code>,
+    <code>kode_mata_uang</code>, <code>bisa_posting</code>, <code>akun_kontrol</code>,
+    <code>akun_rekonsiliasi</code>, <code>aktif</code>, <code>deskripsi</code>.
+    Wajib ada: <code>kode_akun</code>, <code>nama_akun</code>, <code>kategori</code>.
+    Kolom boolean pakai <code>Y</code>/<code>T</code> dan <code>N</code>/<code>F</code>.
+    Cell kosong berarti kolom itu diabaikan, jadi kolom yang tidak ada di file tidak akan
+    menimpa data lama. Akun yang sudah ada di-update, bukan diduplikasi.
+    <code>is_system</code> tidak pernah ditulis dari import.
+  </p>
+
+  <h2>1. Pilih company tujuan</h2>
+  <form method="get" action="">
+    <div class="form-row">
+      <label for="id_company_pick">Company:</label>
+      <select name="company_id" id="id_company_pick">
+        {% for c in companies %}
+          <option value="{{ c.pk }}"{% if company and c.pk == company.pk %} selected{% endif %}>
+            {{ c.company_code }} &mdash; {{ c.display_name|default:c.legal_name }}
+          </option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="button">Pilih</button>
+    </div>
+  </form>
+
+  {% if not companies %}
+    <p class="errornote">User ini tidak punya akses ke company mana pun.</p>
+  {% endif %}
+
+  {% if errors %}
+    <h2>Import ditolak</h2>
+    <p class="errornote">
+      {{ errors|length }} baris bermasalah. Tidak ada data yang ditulis ke database.
+    </p>
+    <table class="admin-table">
+      <thead>
+        <tr><th>Baris</th><th>Kode</th><th>Masalah</th></tr>
+      </thead>
+      <tbody>
+        {% for e in errors %}
+          <tr>
+            <td>{{ e.line|default_if_none:"-" }}</td>
+            <td>{{ e.code|default:"-" }}</td>
+            <td>{{ e.reason }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+
+  {% if plan %}
+    <h2>2. Preview</h2>
+    <p><strong>{{ summary }}</strong> untuk company
+      <strong>{{ company.company_code }}</strong>. Belum ada yang ditulis &mdash; periksa dulu.</p>
+
+    <h3>Akun baru ({{ plan.create|length }})</h3>
+    {% if plan.create %}
+      <table class="admin-table">
+        <thead>
+          <tr><th>Baris</th><th>Kode</th><th>Nama</th><th>Kode induk</th></tr>
+        </thead>
+        <tbody>
+          {% for row in plan.create %}
+            <tr>
+              <td>{{ row.line }}</td>
+              <td>{{ row.code }}</td>
+              <td>{{ row.name }}</td>
+              <td>{{ row.parent_code|default_if_none:"-" }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>Tidak ada akun baru.</p>
+    {% endif %}
+
+    <h3>Akun diupdate ({{ plan.update|length }})</h3>
+    {% if plan.update %}
+      <table class="admin-table">
+        <thead>
+          <tr><th>Baris</th><th>Kode</th><th>Nama</th><th>Perubahan</th></tr>
+        </thead>
+        <tbody>
+          {% for row in plan.update %}
+            <tr>
+              <td>{{ row.line }}</td>
+              <td>{{ row.code }}</td>
+              <td>{{ row.name }}</td>
+              <td>
+                {% for change in row.change_rows %}
+                  <div>
+                    <strong>{{ change.label }}</strong>:
+                    &ldquo;{{ change.old }}&rdquo; &rarr; &ldquo;{{ change.new }}&rdquo;
+                  </div>
+                {% endfor %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>Tidak ada akun yang berubah.</p>
+    {% endif %}
+
+    <h3>Tidak berubah ({{ plan.unchanged|length }})</h3>
+    <p>
+      {% for row in plan.unchanged %}{{ row.code }}{% if not forloop.last %}, {% endif %}{% endfor %}
+    </p>
+
+    {% if can_import %}
+      <form method="post" action="">
+        {% csrf_token %}
+        <input type="hidden" name="company_id" value="{{ company.pk }}">
+        <input type="hidden" name="confirm" value="1">
+        <p class="submit-row">
+          <button type="submit" class="default">Ya, tulis {{ summary }}</button>
+        </p>
+      </form>
+      <form method="post" action="">
+        {% csrf_token %}
+        <input type="hidden" name="company_id" value="{{ company.pk }}">
+        <button type="submit" class="button">Batal, kembali ke daftar akun</button>
+      </form>
+    {% endif %}
+  {% elif not errors and company %}
+    <h2>2. Upload file CSV</h2>
+    {% if can_import %}
+      <form method="post" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="company_id" value="{{ company.pk }}">
+        <div class="form-row">
+          <label for="id_csv_file">File CSV:</label>
+          <input type="file" name="csv_file" id="id_csv_file" accept=".csv,text/csv" required>
+        </div>
+        <p class="help">
+          Maksimal 5000 baris per file. Hasilnya akan ditampilkan sebagai preview dulu
+          sebelum ditulis.
+        </p>
+        <p class="submit-row">
+          <button type="submit" class="default">Upload dan preview</button>
+        </p>
+      </form>
+    {% else %}
+      <p class="errornote">Hak tambah akun diperlukan untuk menjalankan import.</p>
+    {% endif %}
+  {% endif %}
+
+</div>
+{% endblock %}

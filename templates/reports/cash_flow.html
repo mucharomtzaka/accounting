@@ -1,0 +1,116 @@
+{% extends "reports/base.html" %}
+{% load i18n money %}
+
+{% block report_title %}Cash Flow{% endblock %}
+{% block report_period %}<p class="text-sm text-slate-500">Periode {{ start }} s/d {{ end }}</p>{% endblock %}
+
+{% block report_content %}
+{% if data %}
+<div class="kpi-grid mb-6">
+    {% for label, values in data.inflow.items %}
+    <div class="kpi-card">
+        <div class="kpi-label">Inflow - {{ label }}</div>
+        <div class="kpi-value kpi-positive">{{ values|money }}</div>
+    </div>
+    {% endfor %}
+    {% for label, values in data.outflow.items %}
+    <div class="kpi-card">
+        <div class="kpi-label">Outflow - {{ label }}</div>
+        <div class="kpi-value kpi-negative">{{ values|money }}</div>
+    </div>
+    {% endfor %}
+    <div class="kpi-card">
+        <div class="kpi-label">{% translate 'Net Cash' %}</div>
+        <div class="kpi-value {% if data.net_cash >= 0 %}kpi-positive{% else %}kpi-negative{% endif %}">{{ data.net_cash|money }}</div>
+    </div>
+</div>
+
+{% comment %}
+    Rekonsiliasi saldo: kas awal + net per section = kas akhir. Mutasi antar
+    rekening kas ditampilkan gross sebagai info, tidak ikut net.
+{% endcomment %}
+<div class="kpi-card overflow-x-auto mb-6">
+    <h2 class="mb-1 text-sm font-semibold">{% translate 'Cash Flow Summary' %}</h2>
+    <table class="report-table">
+        <tbody>
+            <tr>
+                <td>{% translate 'Cash & Bank at Beginning' %}</td>
+                <td class="num">{{ data.opening_cash|money }}</td>
+            </tr>
+            {% for section in data.sections %}{% if section.key != 'Transfer' %}
+            <tr>
+                <td>{% translate 'Cash Flow' %} {{ section.label }}</td>
+                <td class="num">{{ section.net|money }}</td>
+            </tr>
+            {% endif %}{% endfor %}
+            <tr class="report-total">
+                <td>{% translate 'Increase/(Decrease) in Cash' %}</td>
+                <td class="num">{{ data.net_cash|money }}</td>
+            </tr>
+            <tr>
+                <td>{% translate 'Cash & Bank at End' %}</td>
+                <td class="num">{{ data.closing_cash|money }}</td>
+            </tr>
+        </tbody>
+    </table>
+    {% if data.transfer.inflow or data.transfer.outflow %}
+    <p class="mt-2 text-xs text-slate-500">
+        {% translate 'Transfers between cash accounts (info, excluded from net)' %}:
+        {% translate 'Cash In' %} {{ data.transfer.inflow|money }},
+        {% translate 'Cash Out' %} {{ data.transfer.outflow|money }}.
+    </p>
+    {% endif %}
+</div>
+
+{% comment %}
+    Rincian: satu tabel per section, isinya baris jurnal yang menyentuh akun
+    kas/bank. Section kosong tidak dirender supaya tidak jadi tabel hampa.
+{% endcomment %}
+{% for section in data.sections %}
+  {% if section.lines %}
+  <div class="kpi-card overflow-x-auto mb-6">
+    <h2 class="mb-1 text-sm font-semibold">{{ section.label }}</h2>
+    <p class="mb-3 text-xs text-slate-500">
+      Masuk {{ section.inflow|money }} &middot; Keluar {{ section.outflow|money }}
+      &middot; Net {{ section.net|money }}
+    </p>
+    <table class="report-table">
+      <thead>
+        <tr>
+          <th>{% translate 'Tanggal' %}</th>
+          <th>{% translate 'Journal' %}</th>
+          <th>{% translate 'Deskripsi' %}</th>
+          <th>{% translate 'Akun Kas/Bank' %}</th>
+          <th class="num">{% translate 'Masuk' %}</th>
+          <th class="num">{% translate 'Keluar' %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in section.lines %}
+        <tr>
+          <td>{{ row.journal.journal_date|date:"d M Y" }}</td>
+          <td class="font-mono text-xs">{{ row.journal.journal_number }}</td>
+          <td>{{ row.line.description|default:row.journal.description }}</td>
+          <td><span class="font-mono text-xs text-slate-500">{{ row.line.account.account_code }}</span> {{ row.line.account.account_name }}</td>
+          <td class="num">{% if row.inflow %}{{ row.inflow|money }}{% endif %}</td>
+          <td class="num">{% if row.outflow %}{{ row.outflow|money }}{% endif %}</td>
+        </tr>
+        {% endfor %}
+        <tr class="report-total">
+          <td colspan="4">{% translate 'Total' %} {{ section.label }}</td>
+          <td class="num">{{ section.inflow|money }}</td>
+          <td class="num">{{ section.outflow|money }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+{% endfor %}
+
+{% if not data.has_activity %}
+<div class="kpi-card"><p class="text-slate-600">Belum ada mutasi kas pada periode ini.</p></div>
+{% endif %}
+{% else %}
+<div class="kpi-card"><p class="text-slate-600">Pilih company terlebih dahulu.</p></div>
+{% endif %}
+{% endblock %}

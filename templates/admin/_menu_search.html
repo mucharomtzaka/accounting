@@ -1,0 +1,11 @@
+{% load i18n %}
+{% comment %}
+    Pencarian menu: filter card client-side. Tanpa library JS.
+    Item yang difilter ditandai data-search (nama app + model).
+{% endcomment %}
+<div class="menu-search">
+  <input type="search" class="menu-search-input" autocomplete="off"
+         placeholder="{% translate 'Search menu' %}"
+         aria-label="{% translate 'Search menu' %}">
+  <p class="menu-search-empty" hidden>{% translate 'No matching menu.' %}</p>
+</div>

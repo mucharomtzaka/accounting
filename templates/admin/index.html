@@ -1,0 +1,92 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static nav_order %}
+
+{% block coltype %}colM{% endblock %}
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+{% block nav-breadcrumbs %}{% endblock %}
+{% block nav-sidebar %}{% endblock %}
+
+{% comment %}
+    Judul "Application menu" sengaja dikosongkan di block content_title dan
+    dirender sendiri di dalam {% block content %}, tepat di atas grid app.
+    Kalau dibiarkan di sini, judulnya muncul sebelum seksi Quick menu dan
+    terlihat seperti milik Quick menu.
+{% endcomment %}
+{% block content_title %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <div class="admin-clock" id="admin-clock" title="{% translate 'Waktu lokal' %}">
+    <span id="admin-clock-date">{% now "l, d F Y" %}</span>
+    <span class="admin-clock-sep" aria-hidden="true"> &middot; </span>
+    <span id="admin-clock-time" class="admin-clock-time">{% now "H:i:s" %}</span>
+  </div>
+  <script>
+  (function(){var d=document.getElementById('admin-clock-date'),t=document.getElementById('admin-clock-time');if(!d||!t)return;var lang=document.documentElement.lang||'id';function tick(){var n=new Date();try{d.textContent=new Intl.DateTimeFormat(lang,{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(n);t.textContent=new Intl.DateTimeFormat(lang,{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(n).replace(/\./g,':');}catch(e){t.textContent=n.toLocaleTimeString();}}tick();setInterval(tick,1000);})();
+  </script>
+{% if user.is_authenticated %}
+  {% comment %}
+      Company aktif + pemilih company. Context dari core.context_processors.company_context;
+      form GET ke core_switch_company (view-nya baca query string), jadi tanpa CSRF.
+  {% endcomment %}
+  <section class="company-info">
+    <div class="company-info-text">
+      <span class="company-info-label">{% translate 'Company aktif' %}</span>
+      {% if active_company %}
+        <strong>{{ active_company.company_code }} &mdash; {{ active_company.display_name|default:active_company.legal_name }}</strong>
+        <span class="company-info-meta">
+          {{ active_company.get_status_display }}
+          {% if active_company.nib %}&middot; NIB {{ active_company.nib }}{% endif %}
+          {% if active_company.base_currency %}&middot; {{ active_company.base_currency }}{% endif %}
+        </span>
+      {% else %}
+        <strong>{% translate 'Belum ada company' %}</strong>
+        <span class="company-info-meta"><a href="{% url 'core_register_company' %}">{% translate 'Daftarkan company' %}</a></span>
+      {% endif %}
+    </div>
+    {% if available_companies.count > 1 %}
+      <form method="get" action="{{ switch_company_url }}" class="company-switch">
+        <label class="visually-hidden" for="id_active_company">{% translate 'Company aktif' %}</label>
+        <select name="company_id" id="id_active_company">
+          {% for c in available_companies %}
+            <option value="{{ c.pk }}" {% if active_company and c.pk == active_company.pk %}selected{% endif %}>{{ c.company_code }} &mdash; {{ c.display_name|default:c.legal_name }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="button">{% translate 'Ganti' %}</button>
+      </form>
+    {% endif %}
+  </section>
+{% endif %}
+{% comment %}
+    Shortcut + navigasi cepat. Partial-nya milik reports supaya halaman report
+    bisa memakainya juga tanpa menggandakan daftar kartu.
+{% endcomment %}
+{% if user.is_staff %}
+  {% include "reports/quick_menu.html" %}
+{% endif %}
+{% if app_list %}
+  {% comment %}
+    Grid kartu ala Odoo: satu kartu per app, klik -> halaman app berisi sub-menu.
+  {% endcomment %}
+  {% with apps=app_list|by_model_count %}
+  <h1 class="section-title">{% translate 'Application menu' %}</h1>
+  {% include "admin/_menu_search.html" %}
+  <div class="app-cards">
+    {% for app in apps %}
+      <a class="app-card app-{{ app.app_label }}" href="{{ app.app_url }}"
+         data-search="{{ app.name }} {{ app.app_label }}"
+         title="{{ app.models|length }} menu">
+        <span class="nav-icon nav-icon-lg"><svg><use href="{{ app_icons_url }}#icon-{{ app.app_label }}" /></svg></span>
+        <span class="nav-label">{{ app.name }}</span>
+        <span class="nav-count">{{ app.models|length }}</span>
+      </a>
+    {% endfor %}
+  </div>
+  {% endwith %}
+{% else %}
+  <p class="nav-empty">{% translate 'You don’t have permission to view or edit anything.' %}</p>
+{% endif %}
+</div>
+{% endblock %}
+
+{% block sidebar %}{% endblock %}

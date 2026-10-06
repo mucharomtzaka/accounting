@@ -1,0 +1,76 @@
+{% extends "reports/base.html" %}
+{% load i18n money %}
+
+{% block report_title %}Profit &amp; Loss{% endblock %}
+{% block report_period %}<p class="text-sm text-slate-500">Periode {{ start }} s/d {{ end }}</p>{% endblock %}
+
+{% block report_content %}
+{% if data %}
+<div class="kpi-grid mb-6">
+    <div class="kpi-card"><div class="kpi-label">{% translate 'Revenue' %}</div><div class="kpi-value">{{ data.revenue|money }}</div></div>
+    <div class="kpi-card"><div class="kpi-label">{% translate 'COGS' %}</div><div class="kpi-value">{{ data.cogs|money }}</div></div>
+    <div class="kpi-card"><div class="kpi-label">{% translate 'Gross Profit' %}</div><div class="kpi-value kpi-positive">{{ data.gross_profit|money }}</div></div>
+    <div class="kpi-card"><div class="kpi-label">{% translate 'Operating Expense' %}</div><div class="kpi-value">{{ data.expense|money }}</div></div>
+    <div class="kpi-card"><div class="kpi-label">{% translate 'Net Profit' %}</div><div class="kpi-value {% if data.net_profit >= 0 %}kpi-positive{% else %}kpi-negative{% endif %}">{{ data.net_profit|money }}</div></div>
+</div>
+
+<div class="kpi-card mb-4 overflow-x-auto">
+    <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-600">{% translate 'Revenue' %}</h2>
+    <table class="report-table">
+        <thead><tr><th>{% translate 'Company' %}</th><th>{% translate 'Account' %}</th><th class="num">{% translate 'Amount' %}</th></tr></thead>
+        <tbody>
+        {% for row in data.revenue_lines %}
+            <tr>
+                <td>{{ row.company.display_name }}<span class="report-sub">{{ row.company.company_code }}</span></td>
+                <td><span class="font-mono text-xs text-slate-500">{{ row.account.account_code }}</span> {{ row.account.account_name }}</td>
+                <td class="num">{{ row.amount|money }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="3" class="text-slate-400">-</td></tr>
+        {% endfor %}
+        </tbody>
+        <tfoot><tr class="report-total"><td colspan="2">{% translate 'TOTAL REVENUE' %}</td><td class="num">{{ data.revenue|money }}</td></tr></tfoot>
+    </table>
+</div>
+
+<div class="kpi-card mb-4 overflow-x-auto">
+    <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-600">{% translate 'COGS' %}</h2>
+    <table class="report-table">
+        <thead><tr><th>{% translate 'Company' %}</th><th>{% translate 'Account' %}</th><th class="num">{% translate 'Amount' %}</th></tr></thead>
+        <tbody>
+        {% for row in data.cogs_lines %}
+            <tr>
+                <td>{{ row.company.display_name }}<span class="report-sub">{{ row.company.company_code }}</span></td>
+                <td><span class="font-mono text-xs text-slate-500">{{ row.account.account_code }}</span> {{ row.account.account_name }}</td>
+                <td class="num">{{ row.amount|money }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="3" class="text-slate-400">-</td></tr>
+        {% endfor %}
+        </tbody>
+        <tfoot><tr class="report-total"><td colspan="2">{% translate 'TOTAL COGS' %}</td><td class="num">{{ data.cogs|money }}</td></tr></tfoot>
+    </table>
+</div>
+
+<div class="kpi-card mb-4 overflow-x-auto">
+    <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-600">{% translate 'Operating Expense' %}</h2>
+    <table class="report-table">
+        <thead><tr><th>{% translate 'Company' %}</th><th>{% translate 'Account' %}</th><th class="num">{% translate 'Amount' %}</th></tr></thead>
+        <tbody>
+        {% for row in data.expense_lines %}
+            <tr>
+                <td>{{ row.company.display_name }}<span class="report-sub">{{ row.company.company_code }}</span></td>
+                <td><span class="font-mono text-xs text-slate-500">{{ row.account.account_code }}</span> {{ row.account.account_name }}</td>
+                <td class="num">{{ row.amount|money }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="3" class="text-slate-400">-</td></tr>
+        {% endfor %}
+        </tbody>
+        <tfoot><tr class="report-total"><td colspan="2">{% translate 'TOTAL EXPENSE' %}</td><td class="num">{{ data.expense|money }}</td></tr></tfoot>
+    </table>
+</div>
+{% else %}
+<div class="kpi-card"><p class="text-slate-600">Pilih company terlebih dahulu.</p></div>
+{% endif %}
+{% endblock %}

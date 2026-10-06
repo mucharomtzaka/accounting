@@ -1,0 +1,105 @@
+{% extends "reports/base.html" %}
+{% load i18n money %}
+
+{% block report_title %}Consolidated Financial Report{% endblock %}
+{% block report_period %}<p class="text-sm text-slate-500">Periode {{ start }} s/d {{ end }} - PRD 25</p>{% endblock %}
+
+{% block report_filter %}{% endblock %}
+
+{% block report_content %}
+<form method="get" class="report-filter">
+    <div>
+        <label for="flt-group">{% translate 'Group' %}</label>
+        <select name="group" id="flt-group">
+            {% for g in groups %}
+            <option value="{{ g.pk }}" {% if g.pk == group.pk %}selected{% endif %}>{{ g.code }} - {{ g.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <label for="flt-start">{% translate 'Dari' %}</label>
+        <input type="date" name="start" id="flt-start" value="{{ start }}">
+    </div>
+    <div>
+        <label for="flt-end">{% translate 'Sampai' %}</label>
+        <input type="date" name="end" id="flt-end" value="{{ end }}">
+    </div>
+    <button type="submit" class="btn-apply">{% translate 'Terapkan' %}</button>
+</form>
+
+{% if data %}
+<p class="mb-4 text-sm text-slate-600">
+    Reporting currency: <strong class="font-mono">{{ data.target_currency }}</strong>
+    {% if data.nci_detail %}
+    &middot; {{ data.nci_detail|length }} anak perusahaan dengan minority interest
+    {% endif %}
+</p>
+
+<div class="kpi-grid mb-6">
+    <div class="kpi-card"><div class="kpi-label">{% translate 'Consolidated Revenue' %}</div><div class="kpi-value">{{ data.revenue|money }}</div>
+        {% if data.ic_revenue %}<div class="kpi-sub">setelah eliminasi IC {{ data.ic_revenue|money }}</div>{% endif %}</div>
+    <div class="kpi-card"><div class="kpi-label">{% translate 'Gross Profit' %}</div><div class="kpi-value kpi-positive">{{ data.gross_profit|money }}</div></div>
+    <div class="kpi-card"><div class="kpi-label">{% translate 'Net Profit' %}</div>
+        <div class="kpi-value {% if data.net_profit >= 0 %}kpi-positive{% else %}kpi-negative{% endif %}">{{ data.net_profit|money }}</div></div>
+    <div class="kpi-card"><div class="kpi-label">{% translate 'Non-Controlling Interest' %}</div><div class="kpi-value kpi-negative">{{ data.nci|money }}</div>
+        <div class="kpi-sub">{% translate 'dipotong dari laba group' %}</div></div>
+    <div class="kpi-card"><div class="kpi-label">{% translate 'Net Profit (Group attributable)' %}</div>
+        <div class="kpi-value {% if data.net_profit_attributable >= 0 %}kpi-positive{% else %}kpi-negative{% endif %}">{{ data.net_profit_attributable|money }}</div></div>
+</div>
+
+<div class="kpi-card mb-4 overflow-x-auto">
+    <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-600">{% translate 'Non-Controlling Interest Detail' %}</h2>
+    <table class="report-table">
+        <thead>
+            <tr><th>{% translate 'Anak Perusahaan' %}</th><th class="num">{% translate 'Ownership' %}</th><th class="num">{% translate 'Minority %' %}</th><th class="num">{% translate 'Net Profit (local)' %}</th><th class="num">{% translate 'Net Profit' %} ({{ data.target_currency }})</th><th class="num">{% translate 'NCI' %}</th></tr>
+        </thead>
+        <tbody>
+        {% for r in data.nci_detail %}
+            <tr>
+                <td>{{ r.company.display_name }}<span class="report-sub">{{ r.company.company_code }}</span></td>
+                <td class="num">{{ r.ownership_percent|floatformat:2 }}%</td>
+                <td class="num">{{ r.minority_percent|floatformat:2 }}%</td>
+                <td class="num">{{ r.net_profit_local|money:r.company.base_currency }}</td>
+                <td class="num">{{ r.net_profit_group|money }}</td>
+                <td class="num font-semibold kpi-negative">{{ r.nci|money }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="6" class="py-6 text-center text-slate-400">Semua anak perusahaan 100% dimiliki group - tidak ada NCI.</td></tr>
+        {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr class="report-total">
+                <td colspan="5">{% translate 'TOTAL NCI' %}</td>
+                <td class="num">{{ data.nci|money }}</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+<div class="kpi-card overflow-x-auto">
+    <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-600">{% translate 'Intercompany Exceptions' %}</h2>
+    {% if data.ic_exceptions %}
+    <table class="report-table">
+        <thead><tr><th>{% translate 'Tipe' %}</th><th>{% translate 'Transaksi' %}</th><th>{% translate 'Keterangan' %}</th></tr></thead>
+        <tbody>
+        {% for e in data.ic_exceptions %}
+            <tr>
+                <td><span class="badge-bad">{{ e.type }}</span></td>
+                <td class="font-mono text-xs">{{ e.transaction.transaction_number }}</td>
+                <td>{{ e.message }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <p class="mt-3 text-xs text-slate-500">
+        Exception berarti belum dieliminasi. Jalankan Consolidation Run untuk
+        reversing jurnal IC yang sudah match.
+    </p>
+    {% else %}
+    <p class="text-sm text-slate-500">Tidak ada exception - semua transaksi intercompany sudah match.</p>
+    {% endif %}
+</div>
+{% else %}
+<div class="kpi-card"><p class="text-slate-600">Pilih group untuk melihat consolidated report.</p></div>
+{% endif %}
+{% endblock %}

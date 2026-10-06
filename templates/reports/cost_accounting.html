@@ -1,0 +1,75 @@
+{% extends "reports/base.html" %}
+{% load i18n money %}
+
+{% block report_title %}Cost Accounting - Profitability{% endblock %}
+{% block report_period %}<p class="text-sm text-slate-500">Periode {{ start }} s/d {{ end }} - PRD 19</p>{% endblock %}
+
+{% block report_filter %}{% endblock %}
+
+{% block report_content %}
+<form method="get" class="report-filter">
+    {% include "reports/_company_select.html" %}
+    <div>
+        <label for="flt-dim">{% translate 'Dimensi' %}</label>
+        <select name="dimension" id="flt-dim">
+            {% for key, label in dimensions.items %}
+            <option value="{{ key }}" {% if key == dimension %}selected{% endif %}>{{ key }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <label for="flt-start">{% translate 'Dari' %}</label>
+        <input type="date" name="start" id="flt-start" value="{{ start }}">
+    </div>
+    <div>
+        <label for="flt-end">{% translate 'Sampai' %}</label>
+        <input type="date" name="end" id="flt-end" value="{{ end }}">
+    </div>
+    <button type="submit" class="btn-apply">{% translate 'Terapkan' %}</button>
+</form>
+
+<div class="kpi-grid mb-6">
+    <div class="kpi-card"><div class="kpi-label">{% translate 'Total Revenue' %}</div><div class="kpi-value">{{ totals.revenue|money }}</div></div>
+    <div class="kpi-card"><div class="kpi-label">{% translate 'Total COGS' %}</div><div class="kpi-value">{{ totals.cogs|money }}</div></div>
+    <div class="kpi-card"><div class="kpi-label">{% translate 'Total Expense' %}</div><div class="kpi-value">{{ totals.expense|money }}</div></div>
+    <div class="kpi-card"><div class="kpi-label">{% translate 'Total Profit' %}</div>
+        <div class="kpi-value {% if totals.profit >= 0 %}kpi-positive{% else %}kpi-negative{% endif %}">{{ totals.profit|money }}</div>
+    </div>
+</div>
+
+<div class="kpi-card overflow-x-auto">
+    <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-600">Profitability per {{ dimension }}</h2>
+    <table class="report-table">
+        <thead>
+            <tr><th>{{ dimension }}</th><th class="num">{% translate 'Revenue' %}</th><th class="num">{% translate 'COGS' %}</th><th class="num">{% translate 'Gross Profit' %}</th><th class="num">{% translate 'Expense' %}</th><th class="num">{% translate 'Profit' %}</th><th class="num">{% translate 'Margin' %}</th></tr>
+        </thead>
+        <tbody>
+        {% for row in rows %}
+            <tr>
+                <td>{{ row.label }}</td>
+                <td class="num">{{ row.revenue|money }}</td>
+                <td class="num">{{ row.cogs|money }}</td>
+                <td class="num">{{ row.gross_profit|money }}</td>
+                <td class="num">{{ row.expense|money }}</td>
+                <td class="num font-semibold {% if row.profit >= 0 %}kpi-positive{% else %}kpi-negative{% endif %}">{{ row.profit|money }}</td>
+                <td class="num">{{ row.margin|floatformat:1 }}%</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="7" class="py-6 text-center text-slate-400">Tidak ada transaksi dengan dimensi {{ dimension }} pada periode ini.</td></tr>
+        {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr class="report-total">
+                <td>{% translate 'TOTAL' %}</td>
+                <td class="num">{{ totals.revenue|money }}</td>
+                <td class="num">{{ totals.cogs|money }}</td>
+                <td class="num">{{ totals.profit|money }}</td>
+                <td class="num">{{ totals.expense|money }}</td>
+                <td class="num">{{ totals.profit|money }}</td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+    <p class="mt-3 text-xs text-slate-500">Catatan: hanya baris dengan dimensi terisi yang dihitung - line tanpa customer/supplier/dst tidak masuk.</p>
+</div>
+{% endblock %}

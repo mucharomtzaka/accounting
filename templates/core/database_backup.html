@@ -1,0 +1,33 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block title %}{% translate 'Backup & Restore' %}{% endblock %}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+  &rsaquo; {% translate 'Backup & Restore' %}
+</div>
+{% endblock %}
+{% block nav-sidebar %}{% endblock %}
+{% block sidebar %}{% endblock %}
+{% block content_title %}<h1>{% translate 'Backup & Restore Database' %}</h1>{% endblock %}
+{% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin-nav.css' %}?v={{ admin_css_v }}">
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <section class="company-info" style="display:block">
+    <p>{% translate 'Download seluruh data sebagai JSON. Restore menimpa/menambah data dari file backup.' %}</p>
+    <p><a href="{% url 'core_database_download' %}" class="button">{% translate 'Download Backup (JSON)' %}</a></p>
+  </section>
+  <section class="company-info" style="display:block">
+    <h2>{% translate 'Restore dari file backup' %}</h2>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="file" name="backup_file" accept=".json,application/json" required>
+      <button type="submit" class="button" onclick="return confirm('{% translate 'Restore akan menimpa data. Lanjut?' %}')">{% translate 'Restore' %}</button>
+    </form>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "reports/base.html" %}
+{% load i18n money %}
+
+{% block report_title %}General Ledger{% endblock %}
+{% block report_period %}<p class="text-sm text-slate-500">Periode {{ start }} s/d {{ end }}</p>{% endblock %}
+
+{% block report_filter %}{% endblock %}
+
+{% block report_content %}
+<form method="get" class="report-filter">
+    {% include "reports/_company_select.html" %}
+    <div>
+        <label for="gl-account">{% translate 'Account' %}</label>
+        <select name="account" id="gl-account" required>
+            <option value="">-- pilih account --</option>
+            {% for a in accounts %}
+            <option value="{{ a.pk }}" {% if a.pk|stringformat:"s" == request.GET.account %}selected{% endif %}>{{ a.company.company_code }} | {{ a.account_code }} {{ a.account_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div><label for="gl-start">{% translate 'Dari' %}</label><input type="date" name="start" id="gl-start" value="{{ start }}"></div>
+    <div><label for="gl-end">{% translate 'Sampai' %}</label><input type="date" name="end" id="gl-end" value="{{ end }}"></div>
+    <button type="submit" class="btn-apply">{% translate 'Tampilkan' %}</button>
+</form>
+
+{% if account %}
+<div class="kpi-card overflow-x-auto">
+    <h2 class="mb-1 text-sm font-semibold">
+        <span class="font-mono text-slate-500">{{ account.account_code }}</span> {{ account.account_name }}
+    </h2>
+    <p class="mb-3 text-xs text-slate-500">{{ account.account_type }} | Normal balance: {{ account.get_normal_balance_display }}</p>
+    <table class="report-table">
+        <thead>
+            <tr><th>{% translate 'Tanggal' %}</th><th>{% translate 'Journal' %}</th><th>{% translate 'Source' %}</th><th>{% translate 'Deskripsi' %}</th><th class="num">{% translate 'Debit' %}</th><th class="num">{% translate 'Credit' %}</th><th class="num">{% translate 'Saldo' %}</th></tr>
+        </thead>
+        <tbody>
+            <tr class="report-total">
+                <td colspan="4">{% translate 'Opening Balance' %}</td><td class="num"></td><td class="num"></td>
+                <td class="num">{{ opening|money }}</td>
+            </tr>
+            {% for row in rows %}
+            <tr>
+                <td>{{ row.line.journal.journal_date|date:"d M Y" }}</td>
+                <td class="font-mono text-xs">{{ row.line.journal.journal_number }}</td>
+                <td class="text-xs text-slate-500">{{ row.line.journal.get_source_display }}</td>
+                <td>{{ row.line.description|default:row.line.account.account_name }}</td>
+                <td class="num">{% if row.line.debit %}{{ row.line.debit|money }}{% endif %}</td>
+                <td class="num">{% if row.line.credit %}{{ row.line.credit|money }}{% endif %}</td>
+                <td class="num">{{ row.running_balance|money }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" class="py-6 text-center text-slate-400">Belum ada transaksi pada account ini.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="kpi-card"><p class="text-slate-600">Pilih company dan account untuk melihat GENERAL LEDGER.</p></div>
+{% endif %}
+{% endblock %}

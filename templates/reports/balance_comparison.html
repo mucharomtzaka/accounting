@@ -1,0 +1,58 @@
+{% extends "reports/base.html" %}
+{% load i18n money %}
+
+{% block report_title %}Comparative Balance{% endblock %}
+{% block report_period %}<p class="text-sm text-slate-500">{% blocktranslate %}Balance as of {{ start }} compared to {{ end }}{% endblocktranslate %}</p>{% endblock %}
+
+{% block report_content %}
+{% if companies %}
+  {% comment %}
+      Filter base: pilih company + dua tanggal (start = tanggal pembanding,
+      end = tanggal terkini).
+  {% endcomment %}
+  {% if rows %}
+  <div class="kpi-card overflow-x-auto">
+    <h2 class="mb-1 text-sm font-semibold">{% translate 'Comparative Balance' %}</h2>
+    <p class="mb-3 text-xs text-slate-500">
+      {% translate 'Cumulative balance per account at two dates' %}: {{ start }} &rarr; {{ end }}
+    </p>
+    <table class="report-table">
+      <thead>
+        <tr>
+          <th>{% translate 'Company' %}</th>
+          <th>{% translate 'Code' %}</th>
+          <th>{% translate 'Account' %}</th>
+          <th class="num">{{ start }}</th>
+          <th class="num">{{ end }}</th>
+          <th class="num">{% translate 'Change' %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          <td>{{ row.row.company.company_code }}</td>
+          <td class="font-mono text-xs">{{ row.row.account.account_code }}</td>
+          <td>{{ row.row.account.account_name }}</td>
+          <td class="num">{{ row.from|money }}</td>
+          <td class="num">{{ row.to|money }}</td>
+          <td class="num {% if row.delta > 0 %}kpi-positive{% elif row.delta < 0 %}kpi-negative{% endif %}">
+            {% if row.delta %}{{ row.delta|money }}{% else %}-{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+        <tr class="report-total">
+          <td colspan="3">{% translate 'Total' %}</td>
+          <td class="num">{{ totals.from|money }}</td>
+          <td class="num">{{ totals.to|money }}</td>
+          <td class="num">{{ totals.delta|money }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="kpi-card"><p class="text-slate-600">Belum ada saldo pada rentang tanggal ini.</p></div>
+  {% endif %}
+{% else %}
+<div class="kpi-card"><p class="text-slate-600">Pilih company terlebih dahulu.</p></div>
+{% endif %}
+{% endblock %}

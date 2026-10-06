@@ -1,0 +1,127 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block title %}{% translate 'Register Company' %}{% endblock %}
+{% block bodyclass %}{{ block.super }} register-page{% endblock %}
+{% block nav-breadcrumbs %}{% endblock %}
+{% block nav-sidebar %}{% endblock %}
+{% block usertools %}{% endblock %}
+{% block nav-global %}{% endblock %}
+{% block sidebar %}{% endblock %}
+
+{% block content_title %}{% endblock %}
+
+{% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/admin-nav.css' %}?v={{ admin_css_v }}">
+<style>
+  /* #container bawaan Django punya min-width: 980px -> halaman geser di mobile.
+     Dilepas khusus di halaman ini supaya form jadi full width. */
+  .register-page #container { min-width: 0; }
+
+  /* Form register: kolom tunggal, rata tengah, lebar nyaman. */
+  .register-wrap { max-width: 520px; margin: 24px auto; padding: 0 16px; }
+  .register-title { margin: 0 0 16px; font-size: 1.5rem; text-align: center; }
+  .register-card { background: #fff; border: 1px solid #eaecf0; border-radius: 12px;
+                   padding: 24px; box-shadow: 0 2px 4px rgba(0,0,0,.04); }
+  .register-lead { margin: 0 0 20px; font-size: 13px; text-align: center;
+                   color: var(--body-quiet-color, #666); }
+
+  /* Fieldset: grid 1 kolom di mobile, 2 kolom di desktop. minmax(0,1fr) supaya
+     kolom bisa menyusut dan input tidak memaksa lebar minimum. */
+  .register-fieldset { display: grid; grid-template-columns: minmax(0, 1fr);
+                       gap: 16px; margin: 0; padding: 0; border: 0; min-width: 0; }
+  .register-fieldset h2 { grid-column: 1 / -1; margin: 6px 0 0; font-size: 1rem; }
+  .register-fieldset .form-row { min-width: 0; padding: 0; border-bottom: 0; }
+  .register-fieldset .form-row > div { min-width: 0; max-width: 100%; }
+  .register-fieldset label { display: block; margin-bottom: 6px;
+                             font-weight: 600; font-size: .8125rem; }
+  .register-fieldset input[type=text], .register-fieldset input[type=password],
+  .register-fieldset input[type=email], .register-fieldset select {
+    display: block; width: 100%; max-width: 100%; box-sizing: border-box;
+    font-size: 16px; padding: 8px; min-height: 38px; }
+
+  .register-card .submit-row { margin: 20px 0 0; text-align: center; }
+  .register-card .submit-row input {
+    width: 100%; box-sizing: border-box; padding: 12px; font-size: 15px; }
+  .register-back { margin: 16px 0 0; text-align: center; font-size: 13px; }
+
+  /* Toggle mata password (static/js/password-toggle.js). Padding kanan dipaksa
+     lewat selector yang lebih spesifik karena aturan input fieldset di atas
+     menang specificity-nya. */
+  .register-fieldset .password-toggle-wrap { position: relative; display: block; }
+  .register-fieldset .password-toggle-wrap input { padding-right: 40px; }
+  .password-toggle { position: absolute; top: 50%; right: 4px; transform: translateY(-50%);
+                     display: flex; align-items: center; justify-content: center;
+                     width: 34px; height: 34px; padding: 0; background: none; border: 0;
+                     cursor: pointer; color: var(--body-quiet-color, #666); }
+  .password-toggle:hover { color: var(--body-fg, #222); }
+  .password-toggle svg { width: 18px; height: 18px; display: block; }
+
+  @media (prefers-color-scheme: dark) {
+    .register-card { background: var(--body-bg); border-color: var(--hairline-color); }
+  }
+
+  /* Desktop: dua kolom */
+  @media (min-width: 768px) {
+    .register-wrap { max-width: 680px; }
+    .register-fieldset { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 24px; }
+  }
+
+  /* Mobile: padatkan */
+  @media (max-width: 600px) {
+    .register-wrap { margin: 12px auto; padding: 0 12px; }
+    .register-title { font-size: 1.25rem; margin-bottom: 12px; }
+    .register-card { padding: 16px 14px; border-radius: 10px; }
+    .register-lead { margin-bottom: 16px; }
+  }
+</style>
+{% endblock %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <script src="{% static 'js/password-toggle.js' %}" defer
+          data-password-toggle data-show="{% translate 'Tampilkan password' %}"
+          data-hide="{% translate 'Sembunyikan password' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <div class="register-wrap">    <h1 class="register-title">{% translate 'Register Company' %}</h1>
+    <div class="register-card">
+      <p class="register-lead">
+        {% translate 'Buat company baru beserta akun owner. Owner akan mendapat akses ke company ini saja.' %}
+      </p>
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+          <p class="errornote">{{ form.non_field_errors|join:" " }}</p>
+        {% endif %}
+
+        <fieldset class="register-fieldset">
+          <h2>{% translate 'Company' %}</h2>
+          {% for field in form %}
+            {% if field.name == 'first_name' %}<h2>{% translate 'Owner' %}</h2>{% endif %}
+            <div class="form-row">
+              {{ field.errors }}
+              <div>
+                <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span class="required">*</span>{% endif %}</label>
+                {{ field }}
+                {% if field.help_text %}<p class="help">{{ field.help_text }}</p>{% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </fieldset>
+
+        <div class="submit-row">
+          <input type="submit" value="{% translate 'Create company & account' %}">
+        </div>
+      </form>
+
+      <p class="register-back">
+        <a href="{% url 'admin:login' %}">&lsaquo; {% translate 'Back to login' %}</a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

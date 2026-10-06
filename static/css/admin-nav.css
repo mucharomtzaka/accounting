@@ -1,0 +1,270 @@
+/* Nav admin ala Odoo: grid kartu app, klik -> halaman app berisi sub-menu.
+   Muat lewat templates/admin/base_site.html blok extrastyle.
+   Warna pakai var(--...) dari Django admin, jadi ikut dark mode. */
+
+/* Dashboard bawaan Django batasi .dashboard #content ke 600px, jadi grid
+   ikut tertekan. Dashboard kita butuh lebar penuh. */
+.dashboard #content { width: auto; max-width: none; }
+.dashboard #content-main { float: none; width: 100%; }
+
+/* Grid kartu app */
+.app-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+             gap: 14px; padding-top: 8px; }
+.app-card { display: flex; flex-direction: column; align-items: center; gap: 8px;
+            padding: 18px 12px; background: #fff; border: 1px solid #eaecf0; border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,.04); text-decoration: none;
+            color: var(--body-fg); text-align: center; }
+.app-card:hover { background: #f9fafb; border-color: var(--primary); color: var(--body-fg);
+                  box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+/* Kartu app: label panjang (mis. "Authentication and Authorization") wrap,
+   bukan nowrap seperti baris sub-menu. */
+.app-card .nav-label { font-size: 13px; font-weight: 600; text-align: center; line-height: 1.3;
+                      white-space: normal; overflow-wrap: break-word; hyphens: auto; }
+.app-card .nav-count { font-size: 11px; color: var(--body-quiet-color); }
+
+/* Info company aktif di atas halaman index admin, plus pemilih company.
+   Hanya di index, jadi halaman report/COA tidak ikut menambah block. */
+.company-info { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+                gap: 10px; margin-bottom: 18px; padding: 10px 14px;
+                border: 1px solid var(--hairline-color); border-radius: 8px;
+                background: var(--body-bg); }
+.company-info-text { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; min-width: 0; }
+.company-info-label { font-size: 11px; font-weight: 700; text-transform: uppercase;
+                      letter-spacing: .04em; color: var(--body-quiet-color); }
+.company-info-meta { font-size: 12px; color: var(--body-quiet-color); }
+.company-switch { display: flex; align-items: center; gap: 6px; }
+
+/* Seksi quick menu di atas grid app. Kartu pakai grid, bukan flex, supaya
+   aturan 3 kolom di media query max-width 980px ikut berlaku (flex mengabaikan
+   grid-template-columns). */
+.quick-menu { margin-bottom: 22px; padding-bottom: 18px; border-bottom: 1px solid var(--hairline-color); }
+.quick-menu-title { margin: 0; font-size: 12px; font-weight: 700; text-transform: uppercase;
+                    letter-spacing: .04em; color: var(--body-quiet-color);
+                    text-align: center; }
+.quick-menu .app-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                         gap: 10px; padding-top: 10px; }
+.quick-menu .app-card { flex: 0 1 210px; padding: 14px 12px; }
+
+/* Quick menu navigasi di admin index: kartu rapat dengan ikon kecil, karena
+   isinya navigasi dan harus muat dalam satu baris. */
+.quick-menu-nav .app-card { gap: 6px; padding: 8px 10px; }
+.app-card-active { border-color: var(--primary); box-shadow: inset 0 0 0 1px var(--primary); }
+
+/* Judul seksi "Application menu" (dirender di dalam content, bukan
+   content_title, supaya muncul setelah blok Quick menu). */
+.section-title { margin: 4px 0 12px; font-size: 1.5rem; }
+
+/* Pencarian menu: display author menimpa [hidden] bawaan browser,
+   jadi paksa sembunyi eksplisit. */
+.app-card[hidden], .app-card-grid .nav-card[hidden] { display: none !important; }
+.menu-search { margin: 0 0 14px; }
+.menu-search-input { width: 100%; max-width: 340px; padding: 8px 12px; font-size: 14px;
+                     border: 1px solid var(--border-color); border-radius: 8px;
+                     background: var(--body-bg); color: var(--body-fg); }
+.menu-search-input:focus { border-color: var(--primary); outline: none; }
+.menu-search-empty { margin: 8px 0 0; font-size: 13px; color: var(--body-quiet-color); }
+
+/* Halaman app_index (sub-menu): kartu model jadi grid */
+.app-back { display: inline-block; margin-bottom: 12px; font-size: 12px; }
+.app-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.app-card-grid .nav-card { display: flex; align-items: center; gap: 10px; min-height: 52px;
+                           padding: 8px 10px; background-color: #f9fafb; border: 1px solid #f2f4f7;
+                           border-radius: 8px; text-decoration: none; color: var(--body-fg); }
+.app-card-grid .nav-card:hover { background-color: #f0f4fe; border-color: #d0d5dd; }
+.nav-text { min-width: 0; flex: 1 1 auto; display: flex; flex-direction: column; gap: 1px; overflow: hidden; }
+.nav-label { font-size: 14px; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nav-sub { font-size: 11px; line-height: 1.25; color: var(--body-quiet-color);
+           overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nav-empty { padding: 12px; color: var(--body-quiet-color); }
+
+/* Icon */
+.nav-icon { flex: none; width: 34px; height: 34px; display: grid; place-items: center;
+            border-radius: 8px; color: #fff; font-weight: bold; font-size: 15px; }
+.nav-icon-lg { width: 48px; height: 48px; font-size: 20px; border-radius: 12px; }
+.nav-icon-sm { width: 28px; height: 28px; font-size: 13px; border-radius: 7px; }
+
+/* SVG sprite di dalam tile: fallback inisial disembunyikan saat icon termuat */
+.nav-icon svg { width: 55%; height: 55%; display: block; }
+
+
+/* Django #container punya min-width: 980px, jadi di mobile seluruh halaman
+   tergeser dan tak bisa di-scroll. Lepas di layar kecil. */
+@media (max-width: 980px) {
+  #container { min-width: 0; }
+  #content { padding: 16px 12px; }
+  .app-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .app-card { padding: 12px 6px; }
+  /* Quick menu di mobile: 3 kolom tetap, kartu + label dikecilkan supaya
+     "General Ledger" / "Master COA" tetap muat tanpa wrap memanjang. */
+  .quick-menu-nav .app-card { padding: 8px 4px; gap: 4px; }
+  .quick-menu-nav .app-card .nav-label { font-size: 11px; }
+  .quick-menu-nav .nav-icon-sm { width: 24px; height: 24px; font-size: 11px; border-radius: 6px; }
+  .nav-sub { display: none; }
+  .app-card-grid .nav-icon, .app-card-grid .nav-icon-sm { flex-basis: 28px; height: 28px; font-size: 13px; }
+  .nav-global-bar { font-size: 10px; gap: 4px; padding: 2px 4px; }
+  .nav-global-bar a, .lang-switch button { white-space: nowrap; font-size: 10px; padding: 0 2px; }
+}
+
+/* User-tools: tombol toggle + drawer. Di desktop link tetap inline seperti
+   bawaan Django; di mobile jadi panel geser dari kanan. */
+.user-tools-toggle { display: none; align-items: center; gap: 6px;
+                     background: none; border: 0; padding: 4px 6px; cursor: pointer;
+                     color: var(--header-link-color); font-size: .8125rem;
+                     text-transform: uppercase; letter-spacing: .5px; }
+.user-tools-burger { position: relative; width: 16px; height: 2px; flex: none;
+                    background: currentColor; border-radius: 2px; }
+.user-tools-burger::before, .user-tools-burger::after {
+  content: ""; position: absolute; left: 0; width: 16px; height: 2px;
+  background: currentColor; border-radius: 2px; }
+.user-tools-burger::before { top: -5px; }
+.user-tools-burger::after { top: 5px; }
+
+.user-drawer-head { display: none; }
+.user-drawer-backdrop { display: none; }
+/* Role + group user di header (desktop) dan di kepala drawer (mobile). */
+.welcome-role { margin-left: 4px; font-size: 11px; color: var(--header-link-color); opacity: .8; }
+.user-drawer-identity { display: flex; flex-direction: column; min-width: 0; }
+.user-drawer-meta { font-size: 11px; line-height: 1.3; color: var(--body-quiet-color);
+                    overflow-wrap: anywhere; }
+
+/* Desktop: .user-drawer harus inline seperti aslinya, bukan block/flex —
+   kalau block, link turun ke baris sendiri dan header jadi dua baris. */
+#header #user-links.user-drawer { display: inline; }
+#header #user-tools .user-drawer { vertical-align: baseline; }
+
+/* --- Drawer: hanya aktif di layar kecil --- */
+@media (max-width: 700px) {
+  /* responsive.css Django dimuat setelah extrastyle, jadi specificity dinaikkan
+     supaya aturan di sini tetap menang. */
+  /* Branding jadi baris penuh di atas, judul rata tengah, user-tools di bawah. */
+/* Di layar kecil #header diubah jadi block: flex-basis 100% + padding +
+     flex-shrink dari container tak menghasilkan lebar penuh, jadi tombol
+     terdorong keluar viewport. Block + text-align center jauh lebih andal. */
+  #header { display: block; }
+  #header #branding { display: block; text-align: center; justify-content: center; padding: 8px 12px; }
+  #header #branding h1 { margin: 0; font-size: 1.25rem; text-align: center;
+                         white-space: nowrap; overflow: hidden;
+                         text-overflow: ellipsis; max-width: 100%; }
+  #header #user-tools { order: 3; width: 100%; margin: 0;
+                        text-align: center; font-size: .75rem; }
+  .user-tools-toggle { display: inline-flex; justify-content: center; }
+  .user-tools-toggle-name { font-weight: 600; }
+  /* Sapaan "Welcome, X" redundant di mobile, tombol sudah menampilkan nama */
+  #header #user-tools .welcome-text { display: none; }
+  .nav-global-bar { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; gap: 6px; padding: 4px 6px; font-size: 11px; }
+  .nav-global-bar a, .lang-switch button { font-size: 11px; white-space: nowrap; }
+
+  /* Panel geser dari kanan, full tinggi, di atas konten.
+     Selector harus beat aturan desktop di atas (#header #user-links.user-drawer),
+     makanya di-prefix #header #user-tools juga. */
+  #header #user-tools .user-drawer { position: fixed; top: 0; right: 0; bottom: 0;
+                 z-index: 1000;
+                 width: min(300px, 82vw); display: flex; flex-direction: column;
+                 align-items: stretch; gap: 4px; padding: 14px 16px;
+                 background: var(--body-bg); color: var(--body-fg);
+                 box-shadow: -2px 0 16px rgba(0, 0, 0, .18);
+                 transform: translateX(100%); transition: transform .22s ease;
+                 overflow-y: auto; }
+  #header #user-tools .user-drawer.is-open { transform: translateX(0); }
+  #header #user-tools .user-drawer-head { display: flex; align-items: center; justify-content: space-between;
+                      padding-bottom: 10px; margin-bottom: 6px;
+                      border-bottom: 1px solid var(--hairline-color, #e8e8e8); }
+  #header #user-tools .user-drawer-close { background: none; border: 0; cursor: pointer;
+                       font-size: 26px; line-height: 1; padding: 0 6px;
+                       color: var(--body-quiet-color, #666); }
+  /* Target sentuh comfortable */
+  #header #user-tools .user-drawer a, #header #user-tools .user-drawer #logout-form button, #header #user-tools .user-drawer .theme-toggle {
+    display: block; width: 100%; text-align: left; padding: 12px 8px;
+    font-size: .95rem; color: var(--body-fg); text-decoration: none;
+    text-transform: none; letter-spacing: 0; background: none;
+    border: 0; border-bottom: 1px solid var(--hairline-color, #e8e8e8);
+    border-radius: 6px; cursor: pointer; }
+  #header #user-tools .user-drawer a:hover, #header #user-tools .user-drawer #logout-form button:hover {
+    background: var(--darkened-bg); }
+  #header #user-tools .user-drawer #logout-form { display: block; }
+
+  /* `hidden` tak work karena display:block menimpanya - dipaksa eksplisit. */
+  #header #user-tools .user-drawer-backdrop[hidden] { display: none; }
+  #header #user-tools .user-drawer-backdrop { display: block; position: fixed; inset: 0; z-index: 999;
+                          background: rgba(0, 0, 0, .45); }
+}
+
+/* #header flex: branding + user-tools di baris 1, nav-global baris 2 penuh. */
+#header { flex-wrap: wrap; row-gap: 2px; align-items: center; }
+#branding { display: block; flex: none; min-width: 0; width: 100%; text-align: center; }
+#user-tools { flex: none; }
+
+/* Baris bawah header: link dashboard + tukar bahasa, rata tengah.
+   #header punya display:flex, jadi baris ini harus ambil lebar penuh
+   (flex-basis 100%) supaya tidak ikut jadi flex item sempit. */
+.nav-global-bar { flex: 1 0 100%; display: flex; flex-wrap: nowrap; align-items: center;
+                  justify-content: center; gap: 4px;
+                  padding: 2px 4px; font-size: 10px; text-align: center;
+                  line-height: 1.1; overflow-x: auto; -webkit-overflow-scrolling: touch;
+                  scrollbar-width: thin; }
+.nav-global-bar a { color: var(--header-link-color); text-decoration: none; white-space: nowrap; flex: 0 0 auto; }
+.nav-global-bar a:hover { text-decoration: underline; }
+.lang-switch { display: inline-flex; margin: 0; }
+.lang-switch button { background: none; border: 0; padding: 0; cursor: pointer;
+                      color: var(--header-link-color); font: inherit;
+                      text-decoration: underline; }
+.lang-switch button:hover { text-decoration: none; }
+
+/* Jam + tanggal digital khusus dashboard admin (templates/admin/index.html). */
+.admin-clock { margin-bottom: 18px; padding: 10px 14px; text-align: center;
+               font-size: 13px; letter-spacing: .02em; white-space: nowrap;
+               border: 1px solid var(--hairline-color); border-radius: 8px;
+               background: var(--body-bg); color: var(--body-fg); }
+.admin-clock-time { font-variant-numeric: tabular-nums; font-weight: 700; }
+
+/* Warna icon per app, statis supaya tidak lompat baris */
+.app-core .nav-icon, .app-auth .nav-icon { background: #417690; }
+.app-gl .nav-icon { background: #1f6f8b; }
+.app-ar .nav-icon { background: #2e7d5b; }
+.app-ap .nav-icon { background: #8a5a2b; }
+.app-bank .nav-icon { background: #6b4f9e; }
+.app-fa .nav-icon { background: #5b6b2b; }
+.app-inventory .nav-icon { background: #7a4a6d; }
+.app-workflow .nav-icon { background: #a03c47; }
+.app-consolidation .nav-icon { background: #0f766e; }
+.app-notify .nav-icon { background: #b45309; }
+
+/* Popup relasi admin (?_popup=1): form ditaruh di tengah jendela, bukan
+   menempel kiri. Django cuma melepas min-width di body.popup, jadi kontennya
+   masih selebar jendela. `!important` dipakai karena base.css Django menetapkan
+   padding/width #content di specificity yang sama dan dimuat lebih dulu. */
+body.popup #content {
+  max-width: 780px;
+  margin: 0 auto !important;
+  padding: 20px 24px 32px;
+}
+body.popup #content h1 { text-align: center; }
+body.popup .submit-row {
+  max-width: 780px;
+  margin: 0 auto;
+  border-radius: 10px;
+}
+
+/* Dark mode admin */
+@media (prefers-color-scheme: dark) {
+  .app-card { background: var(--body-bg); border-color: var(--hairline-color); }
+  .nav-card { background: var(--darkened-bg); border-color: var(--hairline-color); color: var(--body-fg); }
+  .nav-card:hover { background: #2a2a2a; }
+}
+
+/* Fieldset admin sebelumnya cuma garis atas & padding 0, sehingga judul, help,
+   dan input nempel ke border. Beri jarak isi dari border. */
+#content-main form > div > fieldset.module {
+  margin: 0 0 18px;
+  padding: 14px 16px;
+  border: 1px solid var(--hairline-color);
+  border-radius: 10px;
+  background: var(--body-bg);
+}
+#content-main form > div > fieldset.module h2 {
+  margin: 0 0 10px;
+  padding: 0 0 8px;
+  border-bottom: 1px solid var(--hairline-color);
+}
+#content-main form > div > fieldset.module .form-row { padding: 8px 0; }
+#content-main form > div > fieldset.module .help { margin: 6px 0 10px; }

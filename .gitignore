@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+staticfiles/
+static/css/dist/
+node_modules/
+tailwindcss
+db.sqlite3
+*.log
+media/

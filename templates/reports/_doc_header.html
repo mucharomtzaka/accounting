@@ -1,0 +1,28 @@
+{% load i18n %}
+{% comment %}
+    Header dokumen untuk halaman report: dipakai di layar (ringkas, redup) dan
+    jadi kop di hasil print. Nilai diambil sebagai data-* supaya
+    static/js/report-tools.js bisa menulis kop yang sama ke file Excel tanpa
+    perlu tebak-tebakan URL. `active_company` datang dari
+    core.context_processors.company_context.
+{% endcomment %}
+<div id="report-doc-header" class="report-doc-header"
+     data-company="{{ active_company.company_code|default:'' }}"
+     data-company-name="{{ active_company.display_name|default:active_company.legal_name|default:'' }}"
+     data-company-nib="{{ active_company.nib|default:'' }}"
+     data-company-currency="{{ active_company.base_currency|default:'' }}"
+     data-period="{% if start and end %}{{ start }} s/d {{ end }}{% elif as_of %}{{ as_of }}{% elif today %}{{ today }}{% else %}{% endif %}"
+     data-user="{{ user.get_username }}"
+     data-generated="{% now 'Y-m-d H:i' %}">
+  <div class="report-doc-company">
+    <strong>{{ active_company.company_code|default:'-' }}</strong>
+    {{ active_company.display_name|default:active_company.legal_name|default:'-' }}
+    {% if active_company.nib %}<span>NIB {{ active_company.nib }}</span>{% endif %}
+    {% if active_company.base_currency %}<span>{{ active_company.base_currency }}</span>{% endif %}
+  </div>
+  <div class="report-doc-meta">
+    {% if start and end %}{{ start }} s/d {{ end }}{% elif as_of %}{{ as_of }}{% elif today %}{{ today }}{% endif %}
+    &middot; {{ user.get_username }}
+    &middot; {% now 'Y-m-d H:i' %}
+  </div>
+</div>

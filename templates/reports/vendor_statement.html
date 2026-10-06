@@ -1,0 +1,74 @@
+{% extends "reports/base.html" %}
+{% load i18n money %}
+
+{% block report_title %}Vendor Statement{% endblock %}
+{% block report_period %}<p class="text-sm text-slate-500">Periode {{ start }} s/d {{ end }} - PRD 14</p>{% endblock %}
+
+{% block report_filter %}{% endblock %}
+
+{% block report_content %}
+<form method="get" class="report-filter">
+    {% include "reports/_company_select.html" %}
+    <div>
+        <label for="flt-sup">{% translate 'Supplier' %}</label>
+        <select name="supplier" id="flt-sup">
+            <option value="">-- pilih supplier --</option>
+            {% for s in suppliers %}
+            <option value="{{ s.pk }}" {% if s.pk == supplier.pk %}selected{% endif %}>{{ s.supplier_code }} - {{ s.supplier_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <label for="flt-start">{% translate 'Dari' %}</label>
+        <input type="date" name="start" id="flt-start" value="{{ start }}">
+    </div>
+    <div>
+        <label for="flt-end">{% translate 'Sampai' %}</label>
+        <input type="date" name="end" id="flt-end" value="{{ end }}">
+    </div>
+    <button type="submit" class="btn-apply">{% translate 'Tampilkan' %}</button>
+</form>
+
+{% if supplier %}
+<div class="kpi-grid mb-6">
+    <div class="kpi-card">
+        <div class="kpi-label">{% translate 'Supplier' %}</div>
+        <div class="kpi-value text-sm">{{ supplier.supplier_code }} - {{ supplier.supplier_name }}</div>
+    </div>
+    <div class="kpi-card"><div class="kpi-label">{% translate 'Closing Balance' %}</div>
+        <div class="kpi-value {% if closing_balance >= 0 %}kpi-negative{% else %}kpi-positive{% endif %}">{{ closing_balance|money }}</div>
+    </div>
+</div>
+
+<div class="kpi-card overflow-x-auto">
+    <table class="report-table">
+        <thead>
+            <tr><th>{% translate 'Tanggal' %}</th><th>{% translate 'Type' %}</th><th>{% translate 'Referensi' %}</th><th>{% translate 'Deskripsi' %}</th><th class="num">Kredit (Bill)</th><th class="num">Debit (Payment)</th><th class="num">{% translate 'Saldo' %}</th></tr>
+        </thead>
+        <tbody>
+        {% for e in events %}
+            <tr>
+                <td>{{ e.date|date:"d/m/Y" }}</td>
+                <td class="text-xs text-slate-500">{{ e.type }}</td>
+                <td class="font-mono text-xs">{{ e.reference }}</td>
+                <td>{{ e.description }}</td>
+                <td class="num">{% if e.credit %}{{ e.credit|money }}{% endif %}</td>
+                <td class="num">{% if e.debit %}{{ e.debit|money }}{% endif %}</td>
+                <td class="num">{{ e.balance|money }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="7" class="py-6 text-center text-slate-400">Belum ada bill/payment yang diposting pada periode ini.</td></tr>
+        {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr class="report-total">
+                <td colspan="4">{% translate 'CLOSING BALANCE' %}</td><td colspan="2"></td>
+                <td class="num">{{ closing_balance|money }}</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+{% else %}
+<div class="kpi-card"><p class="text-slate-600">Pilih supplier untuk melihat statement.</p></div>
+{% endif %}
+{% endblock %}

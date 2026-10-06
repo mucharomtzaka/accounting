@@ -1,0 +1,56 @@
+{% extends "reports/base.html" %}
+{% load i18n money %}
+
+{% block report_title %}Company Comparison{% endblock %}
+{% block report_period %}<p class="text-sm text-slate-500">Periode {{ start }} s/d {{ end }} - PRD 28 multi-company reporting</p>{% endblock %}
+
+{% block report_content %}
+{% if group_currency %}
+<p class="mb-4 text-sm text-slate-600">{% translate 'Angka dikonversi ke reporting currency' %}<strong class="font-mono">{{ group_currency }}</strong>
+    untuk bisa dijumlahkan. Nilai asli per company ada di kolom base currency.
+</p>
+{% endif %}
+
+<div class="kpi-card overflow-x-auto">
+    <table class="report-table">
+        <thead>
+            <tr>
+                <th>{% translate 'Company' %}</th><th>{% translate 'Base Currency' %}</th><th class="num">{% translate 'Kurs' %}</th>
+                <th class="num">{% translate 'Revenue' %}</th><th class="num">{% translate 'COGS' %}</th>
+                <th class="num">{% translate 'Gross Profit' %}</th><th class="num">{% translate 'Expense' %}</th><th class="num">{% translate 'Net Profit' %}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for row in rows %}
+            <tr>
+                <td>{{ row.company.display_name }}<span class="report-sub">{{ row.company.company_code }}</span></td>
+                <td class="text-xs text-slate-500">{{ row.company.base_currency }}</td>
+                <td class="num text-xs text-slate-500" title="{{ row.rate_note }}">{{ row.rate|floatformat:2 }}</td>
+                <td class="num">{{ row.revenue|money }}</td>
+                <td class="num">{{ row.cogs|money }}</td>
+                <td class="num kpi-positive">{{ row.gross_profit|money }}</td>
+                <td class="num">{{ row.expense|money }}</td>
+                <td class="num font-semibold {% if row.net_profit >= 0 %}kpi-positive{% else %}kpi-negative{% endif %}">{{ row.net_profit|money }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="8" class="py-6 text-center text-slate-400">Belum ada company yang diakses.</td></tr>
+        {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr class="report-total">
+                <td colspan="3">TOTAL ({{ group_currency|default:"-" }})</td>
+                <td class="num">{{ totals.revenue|money }}</td>
+                <td class="num">{{ totals.cogs|money }}</td>
+                <td class="num">{{ totals.gross_profit|money }}</td>
+                <td class="num">{{ totals.expense|money }}</td>
+                <td class="num">{{ totals.net_profit|money }}</td>
+            </tr>
+        </tfoot>
+    </table>
+    <p class="mt-3 text-xs text-slate-500">
+        Baris consolidated sudah Currency Translation dan eliminasi intercompany,
+        tapi <strong>{% translate 'belum' %}</strong> memotong Non-Controlling Interest.
+        Lihat report <a href="{% url 'reports_consolidated' %}">{% translate 'Consolidated' %}</a> untuk versi lengkap.
+    </p>
+</div>
+{% endblock %}

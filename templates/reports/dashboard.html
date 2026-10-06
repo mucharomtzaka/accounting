@@ -1,0 +1,192 @@
+{% extends "reports/base.html" %}
+{% load i18n money %}
+
+{% block report_title %}Financial Dashboard{% endblock %}
+{% block report_period %}<p class="text-sm text-slate-500">Periode {{ start }} s/d {{ end }}</p>{% endblock %}
+
+{% comment %}
+    Dashboard bukan halaman report: quick menu navigasi ada di admin index
+    (templates/admin/index.html), jadi di sini tidak diulang.
+{% endcomment %}
+{% block report_nav %}{% endblock %}
+
+{% comment %}
+    Filter periode selalu tampil (bukan hanya saat >1 company seperti di
+    reports/base.html), karena dashboard butuh rentang tanggal untuk P&L,
+    arus kas, aging, dan tren.
+{% endcomment %}
+{% block report_filter %}
+<form method="get" class="report-filter">
+    {% include "reports/_company_select.html" %}
+    <label>{% translate 'Dari' %}<input type="date" name="start" value="{{ start }}"></label>
+    <label>{% translate 'Sampai' %}<input type="date" name="end" value="{{ end }}"></label>
+    <button type="submit" class="btn-apply">{% translate 'Terapkan' %}</button>
+</form>
+{% endblock %}
+
+{% block report_content %}
+{% if companies %}
+
+<div class="kpi-grid mb-6">
+    <div class="kpi-card">
+        <div class="kpi-label">{% translate 'Revenue (YTD)' %}</div>
+        <div class="kpi-value">{{ pnl.revenue|money }}</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-label">{% translate 'Gross Profit' %}</div>
+        <div class="kpi-value kpi-positive">{{ pnl.gross_profit|money }}</div>
+        <div class="kpi-sub">COGS {{ pnl.cogs|money }}</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-label">{% translate 'Net Profit' %}</div>
+        <div class="kpi-value {% if pnl.net_profit >= 0 %}kpi-positive{% else %}kpi-negative{% endif %}">{{ pnl.net_profit|money }}</div>
+        <div class="kpi-sub">Expense {{ pnl.expense|money }}</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-label">{% translate 'Total Assets' %}</div>
+        <div class="kpi-value">{{ balance_sheet.total_assets|money }}</div>
+        {% if balance_sheet.is_balanced %}<div class="kpi-sub"><span class="badge-ok">{% translate 'Balanced' %}</span></div>
+        {% else %}<div class="kpi-sub"><span class="badge-bad">{% translate 'Tidak balance' %}</span></div>{% endif %}
+    </div>
+</div>
+
+<div class="kpi-grid mb-6">
+    <div class="kpi-card">
+        <div class="kpi-label">{% translate 'AR Outstanding' %}</div>
+        <div class="kpi-value">{{ ar_total.t|default_if_none:"-"|money }}</div>
+        <div class="kpi-sub">Overdue: {{ ar_overdue_count }}</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-label">{% translate 'AP Outstanding' %}</div>
+        <div class="kpi-value">{{ ap_total.t|default_if_none:"-"|money }}</div>
+        <div class="kpi-sub">Overdue: {{ ap_overdue_count }}</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-label">{% translate 'Net Cash Flow (YTD)' %}</div>
+        <div class="kpi-value {% if cash_flow.net_cash >= 0 %}kpi-positive{% else %}kpi-negative{% endif %}">{{ cash_flow.net_cash|money }}</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-label">{% translate 'Total Equity + Laba' %}</div>
+        <div class="kpi-value">{{ balance_sheet.total_equity|money }}</div>
+    </div>
+</div>
+
+<div class="kpi-card mb-6">
+    <div class="mb-3 flex items-center justify-between">
+        <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-600">{% translate 'Revenue vs Expense - 12 Bulan' %}</h2>
+        <div class="chart-legend">
+            <span><span class="dot dot-revenue"></span>{% translate 'Revenue' %}</span>
+            <span><span class="dot dot-expense"></span>{% translate 'Expense' %}</span>
+        </div>
+    </div>
+    <div class="chart">
+        {% for row in trend %}
+        <div class="chart-col" title="{{ row.label }}: Revenue {{ row.revenue|money }} / Expense {{ row.expense|money }}">
+            <div class="flex h-full flex-row items-end gap-0.5">
+                <div class="chart-bar chart-bar-revenue" style="height:{% widthratio row.revenue trend_max 100 %}%"></div>
+                <div class="chart-bar chart-bar-expense" style="height:{% widthratio row.expense trend_max 100 %}%"></div>
+            </div>
+            <div class="chart-label">{{ row.label }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    <table class="report-table mt-4">
+        <thead><tr><th>{% translate 'Bulan' %}</th><th class="num">{% translate 'Revenue' %}</th><th class="num">{% translate 'Gross Profit' %}</th><th class="num">{% translate 'Expense' %}</th><th class="num">{% translate 'Net Profit' %}</th></tr></thead>
+        <tbody>
+        {% for row in trend %}
+            <tr>
+                <td>{{ row.label }}</td>
+                <td class="num">{{ row.revenue|money }}</td>
+                <td class="num">{{ row.gross_profit|money }}</td>
+                <td class="num">{{ row.expense|money }}</td>
+                <td class="num {% if row.net_profit >= 0 %}kpi-positive{% else %}kpi-negative{% endif %}">{{ row.net_profit|money }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="grid gap-4 md:grid-cols-2 mb-6">
+    <div class="kpi-card">
+        <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-600">{% translate 'Top Expense (YTD)' %}</h2>
+        {% for row in expense_top %}
+        <div class="hbar">
+            <div class="hbar-head">
+                <span>{{ row.company }} - {{ row.label }}</span>
+                <span class="font-mono">{{ row.amount|money_compact }}</span>
+            </div>
+            <div class="hbar-track"><div class="hbar-fill" style="width:{{ row.pct }}%"></div></div>
+        </div>
+        {% empty %}
+        <p class="text-sm text-slate-400">Belum ada expense.</p>
+        {% endfor %}
+    </div>
+
+    <div class="kpi-card">
+        <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-600">{% translate 'AR Aging (Total)' %}</h2>
+        {% for label, amount, pct in aging_total %}
+        <div class="hbar">
+            <div class="hbar-head">
+                <span>{{ label }}</span>
+                <span class="font-mono">{{ amount|money_compact }}</span>
+            </div>
+            <div class="hbar-track">
+                <div class="hbar-fill {% if label == '&gt;90 hari' or label == '>90 hari' %}bg-rose-500{% endif %}" style="width:{{ pct }}%"></div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-sm text-slate-400">Belum ada piutang.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="grid gap-4 md:grid-cols-2 mb-6">
+    <div class="kpi-card">
+        <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-600">{% translate 'Draft - perlu action' %}</h2>
+        <ul class="space-y-2 text-sm">
+            <li class="flex justify-between"><span>{% translate 'Customer Invoice' %}</span><span class="font-mono font-semibold">{{ draft_invoices }}</span></li>
+            <li class="flex justify-between"><span>{% translate 'Supplier Bill' %}</span><span class="font-mono font-semibold">{{ draft_bills }}</span></li>
+            <li class="flex justify-between"><span>{% translate 'Journal Entry' %}</span><span class="font-mono font-semibold">{{ draft_journals }}</span></li>
+        </ul>
+        <div class="mt-4 flex gap-2 text-xs">
+            {% comment %}
+                Tombol "buka" hanya untuk yang punya izin lihat modul terkait,
+                supaya tidak mengarah ke halaman 403.
+            {% endcomment %}
+            {% if perms.ar.view_customerinvoice %}
+            <a class="btn-apply" href="{% url 'admin:ar_customerinvoice_changelist' %}">{% translate 'Open AR' %}</a>
+            {% endif %}
+            {% if perms.ap.view_supplierbill %}
+            <a class="btn-apply" href="{% url 'admin:ap_supplierbill_changelist' %}">{% translate 'Open AP' %}</a>
+            {% endif %}
+            {% if perms.gl.view_journalentry %}
+            <a class="btn-apply" href="{% url 'admin:gl_journalentry_changelist' %}">{% translate 'Open GL' %}</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="kpi-card">
+        <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-600">{% translate 'AR Aging per Company' %}</h2>
+        <table class="report-table">
+            <thead><tr><th>{% translate 'Company' %}</th><th class="num">{% translate 'Current' %}</th><th class="num">&gt;90</th></tr></thead>
+            <tbody>
+            {% for company, buckets in ar_rows %}
+                <tr>
+                    <td>{{ company.display_name }}<span class="report-sub">{{ company.company_code }}</span></td>
+                    <td class="num">{{ buckets.current|money }}</td>
+                    <td class="num">{{ buckets.over90|money }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="3" class="text-slate-400">Belum ada piutang.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% else %}
+<div class="kpi-card">
+    <p class="text-slate-600">Tidak ada company yang bisa diakses. Hubungi Super Admin untuk pemberian akses.</p>
+</div>
+{% endif %}
+{% endblock %}

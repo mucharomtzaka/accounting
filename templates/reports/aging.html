@@ -1,0 +1,57 @@
+{% extends "reports/base.html" %}
+{% load i18n money %}
+
+{% block report_title %}AR / AP Aging{% endblock %}
+{% block report_period %}<p class="text-sm text-slate-500">Posisi {{ as_of }}</p>{% endblock %}
+
+{% block report_filter %}{% endblock %}
+
+{% block report_content %}
+<div class="kpi-card mb-4 overflow-x-auto">
+    <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-600">{% translate 'Accounts Receivable Aging' %}</h2>
+    <table class="report-table">
+        <thead>
+            <tr><th>{% translate 'Company' %}</th><th class="num">{% translate 'Current' %}</th><th class="num">1-30</th><th class="num">31-60</th><th class="num">61-90</th><th class="num">&gt;90</th><th class="num">{% translate 'Total' %}</th></tr>
+        </thead>
+        <tbody>
+        {% for company, b in ar_rows %}
+            <tr>
+                <td>{{ company.display_name }}<span class="report-sub">{{ company.company_code }}</span></td>
+                <td class="num">{{ b.current|money }}</td>
+                <td class="num">{{ b.d30|money }}</td>
+                <td class="num">{{ b.d60|money }}</td>
+                <td class="num">{{ b.d90|money }}</td>
+                <td class="num {% if b.over90 > 0 %}kpi-negative{% endif %}">{{ b.over90|money }}</td>
+                <td class="num font-semibold">{{ b.total|money }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="7" class="py-6 text-center text-slate-400">Belum ada piutang.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="kpi-card mb-4 overflow-x-auto">
+    <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-600">{% translate 'Accounts Payable Aging' %}</h2>
+    <table class="report-table">
+        <thead>
+            <tr><th>{% translate 'Company' %}</th><th class="num">{% translate 'Current' %}</th><th class="num">1-30</th><th class="num">31-60</th><th class="num">61-90</th><th class="num">&gt;90</th><th class="num">{% translate 'Total' %}</th></tr>
+        </thead>
+        <tbody>
+        {% for company, b in ap_rows %}
+            <tr>
+                <td>{{ company.display_name }}<span class="report-sub">{{ company.company_code }}</span></td>
+                <td class="num">{{ b.current|money }}</td>
+                <td class="num">{{ b.d30|money }}</td>
+                <td class="num">{{ b.d60|money }}</td>
+                <td class="num">{{ b.d90|money }}</td>
+                <td class="num {% if b.over90 > 0 %}kpi-negative{% endif %}">{{ b.over90|money }}</td>
+                <td class="num font-semibold">{{ b.total|money }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="7" class="py-6 text-center text-slate-400">Belum ada utang.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

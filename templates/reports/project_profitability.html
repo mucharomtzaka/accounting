@@ -1,0 +1,56 @@
+{% extends "reports/base.html" %}
+{% load i18n money %}
+
+{% block report_title %}Project Profitability{% endblock %}
+{% block report_period %}<p class="text-sm text-slate-500">Periode {{ start }} s/d {{ end }} - PRD 18</p>{% endblock %}
+
+{% block report_content %}
+<div class="kpi-grid mb-6">
+    <div class="kpi-card"><div class="kpi-label">{% translate 'Total Revenue' %}</div><div class="kpi-value">{{ totals.revenue|money }}</div></div>
+    <div class="kpi-card"><div class="kpi-label">{% translate 'Total Cost' %}</div><div class="kpi-value">{{ totals.cost|money }}</div></div>
+    <div class="kpi-card"><div class="kpi-label">{% translate 'Total Profit' %}</div>
+        <div class="kpi-value {% if totals.profit >= 0 %}kpi-positive{% else %}kpi-negative{% endif %}">{{ totals.profit|money }}</div></div>
+    <div class="kpi-card"><div class="kpi-label">{% translate 'Projects' %}</div><div class="kpi-value">{{ rows|length }}</div></div>
+</div>
+
+<div class="kpi-card overflow-x-auto">
+    <table class="report-table">
+        <thead>
+            <tr><th>{% translate 'Company' %}</th><th>{% translate 'Project' %}</th><th>{% translate 'Status' %}</th><th class="num">{% translate 'Contract' %}</th><th class="num">{% translate 'Revenue' %}</th><th class="num">{% translate 'Cost' %}</th><th class="num">{% translate 'Profit' %}</th><th class="num">{% translate 'Margin' %}</th></tr>
+        </thead>
+        <tbody>
+        {% for row in rows %}
+            <tr>
+                <td>{{ row.project.company.display_name }}<span class="report-sub">{{ row.project.company.company_code }}</span></td>
+                <td><span class="font-mono text-xs text-slate-500">{{ row.project.project_code }}</span> {{ row.project.project_name }}</td>
+                <td class="text-xs text-slate-500">{{ row.project.get_status_display }}</td>
+                <td class="num">{{ row.project.contract_value|money }}</td>
+                <td class="num">{{ row.revenue|money }}</td>
+                <td class="num">{{ row.cost|money }}</td>
+                <td class="num font-semibold {% if row.profit >= 0 %}kpi-positive{% else %}kpi-negative{% endif %}">{{ row.profit|money }}</td>
+                <td class="num">{{ row.margin|floatformat:1 }}%</td>
+            </tr>
+            {% if row.cost_breakdown %}
+            <tr>
+                <td colspan="4" class="text-xs text-slate-400">Rincian biaya:</td>
+                <td colspan="4" class="text-xs text-slate-500">
+                    {% for name, amt in row.cost_breakdown.items %}{{ name }}: {{ amt|money }}{% if not forloop.last %} · {% endif %}{% endfor %}
+                </td>
+            </tr>
+            {% endif %}
+        {% empty %}
+            <tr><td colspan="8" class="py-6 text-center text-slate-400">Belum ada project dengan transaksi pada periode ini.</td></tr>
+        {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr class="report-total">
+                <td colspan="4">{% translate 'TOTAL' %}</td>
+                <td class="num">{{ totals.revenue|money }}</td>
+                <td class="num">{{ totals.cost|money }}</td>
+                <td class="num">{{ totals.profit|money }}</td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+{% endblock %}

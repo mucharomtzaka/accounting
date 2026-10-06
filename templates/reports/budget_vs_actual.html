@@ -1,0 +1,51 @@
+{% extends "reports/base.html" %}
+{% load i18n money %}
+
+{% block report_title %}Budget vs Actual{% endblock %}
+{% block report_period %}<p class="text-sm text-slate-500">Periode {{ start }} s/d {{ end }} - PRD 22</p>{% endblock %}
+
+{% block report_content %}
+<div class="kpi-grid mb-6">
+    <div class="kpi-card"><div class="kpi-label">{% translate 'Total Budget' %}</div><div class="kpi-value">{{ totals.budget|money }}</div></div>
+    <div class="kpi-card"><div class="kpi-label">{% translate 'Total Actual' %}</div><div class="kpi-value">{{ totals.actual|money }}</div></div>
+    <div class="kpi-card"><div class="kpi-label">{% translate 'Variance' %}</div>
+        <div class="kpi-value {% if totals.variance >= 0 %}kpi-positive{% else %}kpi-negative{% endif %}">{{ totals.variance|money }}</div>
+    </div>
+    <div class="kpi-card"><div class="kpi-label">{% translate 'Variance %' %}</div>
+        <div class="kpi-value">{{ totals.variance_percent|floatformat:1 }}%</div>
+    </div>
+</div>
+
+<div class="kpi-card overflow-x-auto">
+    <table class="report-table">
+        <thead>
+            <tr><th>{% translate 'Company' %}</th><th>{% translate 'Account' %}</th><th>{% translate 'Branch' %}</th><th>{% translate 'Periode' %}</th><th class="num">{% translate 'Budget' %}</th><th class="num">{% translate 'Actual' %}</th><th class="num">{% translate 'Variance' %}</th><th class="num">Var %</th></tr>
+        </thead>
+        <tbody>
+        {% for row in rows %}
+            <tr>
+                <td>{{ row.company.display_name }}<span class="report-sub">{{ row.company.company_code }}</span></td>
+                <td><span class="font-mono text-xs text-slate-500">{{ row.account.account_code }}</span> {{ row.account.account_name }}</td>
+                <td>{{ row.branch.branch_code|default:"-" }}</td>
+                <td class="text-xs text-slate-500">{{ row.period }}</td>
+                <td class="num">{{ row.budget|money }}</td>
+                <td class="num">{{ row.actual|money }}</td>
+                <td class="num font-semibold {% if row.is_favorable %}kpi-positive{% else %}kpi-negative{% endif %}">{{ row.variance|money }}</td>
+                <td class="num">{% if row.variance_percent >= 0 %}▲{% else %}▼{% endif %} {{ row.variance_percent|floatformat:1 }}%</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="8" class="py-6 text-center text-slate-400">Belum ada budget di periode ini.</td></tr>
+        {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr class="report-total">
+                <td colspan="4">{% translate 'TOTAL' %}</td>
+                <td class="num">{{ totals.budget|money }}</td>
+                <td class="num">{{ totals.actual|money }}</td>
+                <td class="num">{{ totals.variance|money }}</td>
+                <td class="num">{{ totals.variance_percent|floatformat:1 }}%</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+{% endblock %}

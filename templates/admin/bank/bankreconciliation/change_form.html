@@ -1,0 +1,23 @@
+{% extends "admin/change_form.html" %}
+{% block after_field_sets %}
+  {{ block.super }}
+  <fieldset class="module aligned">
+    <h2>Import Bank Statement (CSV)</h2>
+    <p class="help">
+      Kolom yang dikenali: <code>tanggal/date</code>, <code>referensi/reference</code>,
+      <code>uraian/description</code>, <code>debit/debet</code>, <code>kredit/credit</code>,
+      <code>saldo/balance</code>. Baris pertama boleh jadi header atau langsung data.
+      Format tanggal: YYYY-MM-DD atau DD/MM/YYYY. Angka boleh memakai pemisah ribuan.
+    </p>
+    <div class="form-row">
+      <div>
+        <label for="statement_csv">Upload CSV statement:</label>
+        <input type="file" name="statement_csv" id="statement_csv" accept=".csv,text/csv">
+      </div>
+    </div>
+    <p class="help">
+      Upload lalu tekan <strong>Save</strong>. Baris akan langsung diimport ke
+      reconciliation ini.
+    </p>
+  </fieldset>
+{% endblock %}

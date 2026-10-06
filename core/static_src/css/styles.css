@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CSS ini HANYA untuk halaman report (templates/reports/). Skin admin
+   (sidebar, header, form, tabel changelist) sepenuhnya milik django-jet-reboot
+   lewat themes/light-blue/base.css — jangan menimpa --primary, --body-bg,
+   #header, .submit-row, .form-row, atau table#result_list di sini. */
+
+/* Report pages dibungkus chrome Jet, rapikan heading & spacing */
+#report-body { display: block; }
+
+/* KPI cards */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+.kpi-card { @apply rounded-lg border border-slate-200 bg-white p-4 shadow-sm; }
+.kpi-label { @apply text-xs font-medium uppercase tracking-wide text-slate-500; }
+.kpi-value { @apply mt-1 text-2xl font-bold text-slate-800; }
+.kpi-sub { @apply mt-1 text-xs text-slate-500; }
+.kpi-positive { @apply text-emerald-600; }
+.kpi-negative { @apply text-rose-600; }
+
+.report-filter { @apply mb-4 flex flex-wrap items-end gap-x-5 gap-y-4 rounded-lg border border-slate-200 bg-white px-5 py-4; }
+/* Tinggi field disamakan (h-10) supaya select, input tanggal, dan tombol benar
+   sejajar di baris yang sama - kontrol native (select vs date) tingginya beda. */
+.report-filter label { @apply block text-xs font-medium whitespace-nowrap text-slate-600; }
+.report-filter input, .report-filter select { @apply mt-2 block h-10 w-full rounded-md border border-slate-300 px-3 text-sm sm:w-auto; }
+.report-filter .btn-apply { @apply inline-flex h-10 w-full items-center justify-center sm:w-auto; }
+/* Mobile: field ditumpuk penuh lebar, bukan dijejer sampai mepet. Di layar
+   sempit (pegangan tangan) label + input + tombol jadi satu kolom. */
+@media (max-width: 640px) {
+    .report-filter { @apply flex-col items-stretch gap-3; }
+    .report-filter > div { @apply w-full; }
+}
+.btn-apply { @apply rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700; }
+/* Skin admin punya `a:link, a:visited { color: var(--link-fg) }` dengan
+   spesifisitas (0,1,1) - lebih tinggi dari .btn-apply (0,1,0) dan styles.css
+   dimuat setelah base.css. Akibatnya tombol yang berupa <a> (Buka AR/AP/GL)
+   teksnya biru tua di atas latar indigo, hampir tak terbaca. :is(a) menaikkan
+   spesifisitas jadi (0,1,1) tanpa perlu !important. */
+.btn-apply:is(a) { @apply text-white; }
+
+.report-table { @apply w-full text-sm; }
+.report-table th {
+    @apply border-b-2 border-slate-300 px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-600;
+}
+.report-table td { @apply border-b border-slate-200 px-3 py-2; }
+.report-table .num { @apply text-right font-mono; }
+.report-total { @apply border-t-2 border-slate-400 font-bold; }
+
+/* Grid item punya min-width:auto secara default, jadi kolomnya melebar mengikuti
+   isi tabel dan halaman jadi geser horizontal di mobile. min-width:0 membiarkan
+   card menyusut ke lebar container, lalu overflow-x pada .report-table yang
+   menggulirkan isinya (bukan kartu ikut melebar). */
+#report-body .kpi-card { min-width: 0; }
+/* Nama company + kode company, kode ditampilkan muted di bawah nama. */
+.report-sub { @apply block text-xs font-normal normal-case text-slate-500; }
+.badge-ok { @apply inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700; }
+.badge-bad { @apply inline-flex rounded-full bg-rose-100 px-2 py-0.5 text-xs font-semibold text-rose-700; }
+
+/* Report table boleh horizontal scroll di layar kecil */
+@media (max-width: 768px) {
+    #report-body .report-table { display: block; overflow-x: auto; white-space: nowrap; }
+}
+
+/* Chart batang CSS - tanpa library JS. Tinggi bar = persen dari max seri. */
+.chart { @apply flex h-40 items-end gap-1.5; }
+.chart-col { @apply flex h-full flex-1 flex-col justify-end; }
+/* Revenue & expense berbagi satu max (trend_max) dan digabung dalam satu kolom.
+   Kalau ditumpuk vertikal, 100% + 60% = 160% dari tinggi kolom, sehingga
+   flex-shrink(default 1) memampatkan kedua bar secara proporsional dan semua
+   kolom jadi ter-normalisasi penuh -> chart terlihat rata padahal datanya beda.
+   Karena itu dibariskan: tiap bar punya tinggi independen (flex-basis 0). */
+.chart-bar { @apply rounded-t; flex: 1 1 0%; min-width: 0; min-height: 2px; transition: height .2s; }
+.chart-bar-revenue { @apply bg-indigo-500; }
+.chart-bar-expense { @apply bg-rose-400; }
+.chart-label { @apply mt-1 text-center text-[10px] uppercase text-slate-500; }
+.chart-legend { @apply flex gap-4 text-xs text-slate-600; }
+.chart-legend .dot { @apply inline-block h-2 w-2 rounded-full align-middle; }
+.chart-legend .dot-revenue { @apply bg-indigo-500; }
+.chart-legend .dot-expense { @apply bg-rose-400; }
+
+/* Bar horizontal untuk komposisi (expense breakdown, aging) */
+.hbar { @apply mb-1.5; }
+.hbar-head { @apply flex justify-between text-xs text-slate-600; }
+.hbar-track { @apply mt-1 h-2 overflow-hidden rounded-full bg-slate-100; }
+.hbar-fill { @apply h-full rounded-full bg-indigo-500; }

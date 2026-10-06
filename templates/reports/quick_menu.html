@@ -1,0 +1,231 @@
+{% load i18n %}
+{% comment %}
+    Quick menu navigasi, dirender di admin index (templates/admin/index.html).
+    Dipisah dari daftar report lengkap di reports/base.html supaya halaman
+    dashboard tidak menampilkan daftar report sebagai navigasi. Kartu aktif
+    ditandai dari request.path supaya user tahu posisi sekarang.
+
+    Master COA hanya muncul kalau user punya permission view. Kartu User juga
+    hanya untuk yang boleh melihat daftar akun login; tombol tambah sudah ada
+    di halaman itu, jadi tidak dibuat kartu terpisah. Ikon memakai sprite
+    static/icons/apps.svg; kelas app-* memakai label app asli (gl / core / ar /
+    auth) supaya warna tile diambil dari aturan .app-<label> .nav-icon.
+{% endcomment %}
+<section class="quick-menu quick-menu-nav">
+  <h2 class="quick-menu-title">{% translate 'Quick menu' %}</h2>
+  <div class="app-cards">
+    {% if perms.gl.view_account %}
+      {% url 'admin:gl_account_changelist' as u %}
+      {% comment %}
+          company__id__exact = param list_filter bawaan admin, jadi kartu COA
+          langsung ikut company yang sedang aktif di session, tidak perlu filter
+          manual di query string view.
+      {% endcomment %}
+      <a class="app-card app-gl{% if request.path == u %} app-card-active{% endif %}"
+         href="{{ u }}{% if active_company %}?company__id__exact={{ active_company.pk }}{% endif %}"
+         data-search="master coa chart of accounts daftar akun">
+        <span class="nav-icon nav-icon-sm"><svg><use href="{{ app_icons_url }}#icon-gl" /></svg></span>
+        <span class="nav-label">{% translate 'Master COA' %}</span>
+      </a>
+    {% endif %}
+    {% url 'reports_dashboard' as u %}
+    <a class="app-card app-core{% if request.path == u %} app-card-active{% endif %}" href="{{ u }}"
+       data-search="dashboard ringkasan keuangan">
+      <span class="nav-icon nav-icon-sm"><svg><use href="{{ app_icons_url }}#icon-core" /></svg></span>
+      <span class="nav-label">{% translate 'Dashboard' %}</span>
+    </a>
+    {% comment %}
+        Kartu report mengikuti izin model sumbernya: laporan keuangan butuh akses
+        jurnal (gl.view_journalentry), aging butuh akses AR atau AP. Dashboard
+        tidak digerbangi karena cuma ringkasan untuk staff.
+    {% endcomment %}
+    {% if perms.gl.view_journalentry %}
+      {% url 'reports_trial_balance' as u %}
+      <a class="app-card app-gl{% if request.path == u %} app-card-active{% endif %}" href="{{ u }}"
+         data-search="trial balance saldo akun">
+        <span class="nav-icon nav-icon-sm"><svg><use href="{{ app_icons_url }}#icon-gl" /></svg></span>
+        <span class="nav-label">{% translate 'Trial Balance' %}</span>
+      </a>
+      {% url 'reports_profit_loss' as u %}
+      <a class="app-card app-gl{% if request.path == u %} app-card-active{% endif %}" href="{{ u }}"
+         data-search="profit loss pnl laba rugi">
+        <span class="nav-icon nav-icon-sm"><svg><use href="{{ app_icons_url }}#icon-gl" /></svg></span>
+        <span class="nav-label">P&amp;L</span>
+      </a>
+      {% url 'reports_balance_sheet' as u %}
+      <a class="app-card app-gl{% if request.path == u %} app-card-active{% endif %}" href="{{ u }}"
+         data-search="balance sheet neraca assets liabilities">
+        <span class="nav-icon nav-icon-sm"><svg><use href="{{ app_icons_url }}#icon-gl" /></svg></span>
+        <span class="nav-label">{% translate 'Balance Sheet' %}</span>
+      </a>
+      {% url 'reports_cash_flow' as u %}
+      <a class="app-card app-gl{% if request.path == u %} app-card-active{% endif %}" href="{{ u }}"
+         data-search="cash flow kas masuk keluar">
+        <span class="nav-icon nav-icon-sm"><svg><use href="{{ app_icons_url }}#icon-gl" /></svg></span>
+        <span class="nav-label">{% translate 'Cash Flow' %}</span>
+      </a>
+      {% url 'reports_general_ledger' as u %}
+      <a class="app-card app-gl{% if request.path == u %} app-card-active{% endif %}" href="{{ u }}"
+         data-search="general ledger buku besar akun">
+        <span class="nav-icon nav-icon-sm"><svg><use href="{{ app_icons_url }}#icon-gl" /></svg></span>
+        <span class="nav-label">{% translate 'General Ledger' %}</span>
+      </a>
+    {% endif %}
+    {% if perms.ar.view_customerinvoice or perms.ap.view_supplierbill %}
+      {% url 'reports_aging' as u %}
+      <a class="app-card app-ar{% if request.path == u %} app-card-active{% endif %}" href="{{ u }}"
+         data-search="aging ar ap jatuh tempo">
+        <span class="nav-icon nav-icon-sm"><svg><use href="{{ app_icons_url }}#icon-ar" /></svg></span>
+        <span class="nav-label">AR/AP {% translate 'Aging' %}</span>
+      </a>
+    {% endif %}
+    {% if perms.gl.view_accountingperiod %}
+      {% url 'admin:gl_accountingperiod_changelist' as u %}
+      <a class="app-card app-gl{% if request.path == u %} app-card-active{% endif %}" href="{{ u }}"
+         data-search="period accounting period tutup buku fiscal year">
+        <span class="nav-icon nav-icon-sm"><svg><use href="{{ app_icons_url }}#icon-gl" /></svg></span>
+        <span class="nav-label">{% translate 'Periods' %}</span>
+      </a>
+      {% url 'admin:gl_opening_balance' as u %}
+      <a class="app-card app-gl{% if request.path == u %} app-card-active{% endif %}" href="{{ u }}"
+         data-search="opening balance saldo awal migrasi">
+        <span class="nav-icon nav-icon-sm"><svg><use href="{{ app_icons_url }}#icon-gl" /></svg></span>
+        <span class="nav-label">{% translate 'Opening Balance' %}</span>
+      </a>
+    {% endif %}
+    {% if perms.gl.view_journalentry %}
+      {% url 'admin:gl_journalentry_changelist' as u %}
+      <a class="app-card app-gl{% if request.path == u %} app-card-active{% endif %}" href="{{ u }}"
+         data-search="journal entry jurnal draft post">
+        <span class="nav-icon nav-icon-sm"><svg><use href="{{ app_icons_url }}#icon-gl" /></svg></span>
+        <span class="nav-label">{% translate 'Journals' %}</span>
+      </a>
+    {% endif %}
+    {% if perms.ar.view_customerinvoice %}
+      {% url 'admin:ar_customerinvoice_changelist' as u %}
+      <a class="app-card app-ar{% if request.path == u %} app-card-active{% endif %}" href="{{ u }}"
+         data-search="invoice pelanggan ar tagihan">
+        <span class="nav-icon nav-icon-sm"><svg><use href="{{ app_icons_url }}#icon-ar" /></svg></span>
+        <span class="nav-label">{% translate 'Invoices' %}</span>
+      </a>
+    {% endif %}
+    {% if perms.ap.view_supplierbill %}
+      {% url 'admin:ap_supplierbill_changelist' as u %}
+      <a class="app-card app-ap{% if request.path == u %} app-card-active{% endif %}" href="{{ u }}"
+         data-search="bill supplier ap hutang">
+        <span class="nav-icon nav-icon-sm"><svg><use href="{{ app_icons_url }}#icon-ap" /></svg></span>
+        <span class="nav-label">{% translate 'Bills' %}</span>
+      </a>
+    {% endif %}
+    {% if perms.bank.view_bankreconciliation %}
+      {% url 'admin:bank_bankreconciliation_changelist' as u %}
+      <a class="app-card app-bank{% if request.path == u %} app-card-active{% endif %}" href="{{ u }}"
+         data-search="bank reconciliation rekonsiliasi rekening koran">
+        <span class="nav-icon nav-icon-sm"><svg><use href="{{ app_icons_url }}#icon-bank" /></svg></span>
+        <span class="nav-label">{% translate 'Bank Rec' %}</span>
+      </a>
+    {% endif %}
+    {% if perms.fa.view_fixedasset %}
+      {% url 'admin:fa_fixedasset_changelist' as u %}
+      <a class="app-card app-fa{% if request.path == u %} app-card-active{% endif %}" href="{{ u }}"
+         data-search="fixed asset aset tetap penyusutan">
+        <span class="nav-icon nav-icon-sm"><svg><use href="{{ app_icons_url }}#icon-fa" /></svg></span>
+        <span class="nav-label">{% translate 'Fixed Assets' %}</span>
+      </a>
+    {% endif %}
+    {% if perms.inventory.view_stockopname %}
+      {% url 'admin:inventory_stockopname_changelist' as u %}
+      <a class="app-card app-inventory{% if request.path == u %} app-card-active{% endif %}" href="{{ u }}"
+         data-search="stock opname sensus persediaan inventory">
+        <span class="nav-icon nav-icon-sm"><svg><use href="{{ app_icons_url }}#icon-inventory" /></svg></span>
+        <span class="nav-label">{% translate 'Stock Opname' %}</span>
+      </a>
+    {% endif %}
+    {% if perms.workflow.view_approvalrequest %}
+      {% url 'admin:workflow_approvalrequest_changelist' as u %}
+      <a class="app-card app-workflow{% if request.path == u %} app-card-active{% endif %}" href="{{ u }}"
+         data-search="approval workflow persetujuan">
+        <span class="nav-icon nav-icon-sm"><svg><use href="{{ app_icons_url }}#icon-workflow" /></svg></span>
+        <span class="nav-label">{% translate 'Approvals' %}</span>
+      </a>
+    {% endif %}
+    {% if perms.notify.view_notification %}
+      {% url 'admin:notify_notification_changelist' as u %}
+      <a class="app-card app-notify{% if request.path == u %} app-card-active{% endif %}" href="{{ u }}"
+         data-search="notification notifikasi pengingat">
+        <span class="nav-icon nav-icon-sm"><svg><use href="{{ app_icons_url }}#icon-notify" /></svg></span>
+        <span class="nav-label">{% translate 'Notifications' %}</span>
+      </a>
+    {% endif %}
+    {% if perms.core.view_budget %}
+      {% url 'reports_budget_vs_actual' as u %}
+      <a class="app-card app-core{% if request.path == u %} app-card-active{% endif %}" href="{{ u }}"
+         data-search="budget vs actual anggaran realisasi">
+        <span class="nav-icon nav-icon-sm"><svg><use href="{{ app_icons_url }}#icon-core" /></svg></span>
+        <span class="nav-label">{% translate 'Budget vs Actual' %}</span>
+      </a>
+    {% endif %}
+    {% if perms.core.view_project %}
+      {% url 'reports_project_profitability' as u %}
+      <a class="app-card app-core{% if request.path == u %} app-card-active{% endif %}" href="{{ u }}"
+         data-search="project profitability proyek">
+        <span class="nav-icon nav-icon-sm"><svg><use href="{{ app_icons_url }}#icon-core" /></svg></span>
+        <span class="nav-label">{% translate 'Project P&L' %}</span>
+      </a>
+    {% endif %}
+    {% if perms.core.view_product %}
+      {% url 'reports_product_profitability' as u %}
+      <a class="app-card app-core{% if request.path == u %} app-card-active{% endif %}" href="{{ u }}"
+         data-search="product profitability produk">
+        <span class="nav-icon nav-icon-sm"><svg><use href="{{ app_icons_url }}#icon-core" /></svg></span>
+        <span class="nav-label">{% translate 'Product P&L' %}</span>
+      </a>
+    {% endif %}
+    {% if perms.gl.view_journalentry %}
+      {% url 'reports_company_comparison' as u %}
+      <a class="app-card app-core{% if request.path == u %} app-card-active{% endif %}" href="{{ u }}"
+         data-search="company comparison perbandingan perusahaan">
+        <span class="nav-icon nav-icon-sm"><svg><use href="{{ app_icons_url }}#icon-core" /></svg></span>
+        <span class="nav-label">{% translate 'Company Compare' %}</span>
+      </a>
+      {% url 'reports_cost_accounting' as u %}
+      <a class="app-card app-core{% if request.path == u %} app-card-active{% endif %}" href="{{ u }}"
+         data-search="cost accounting margin dimensi customer supplier branch">
+        <span class="nav-icon nav-icon-sm"><svg><use href="{{ app_icons_url }}#icon-core" /></svg></span>
+        <span class="nav-label">{% translate 'Cost Accounting' %}</span>
+      </a>
+    {% endif %}
+    {% if perms.ar.view_customerinvoice %}
+      {% url 'reports_customer_statement' as u %}
+      <a class="app-card app-ar{% if request.path == u %} app-card-active{% endif %}" href="{{ u }}"
+         data-search="customer statement tagihan pelanggan">
+        <span class="nav-icon nav-icon-sm"><svg><use href="{{ app_icons_url }}#icon-ar" /></svg></span>
+        <span class="nav-label">{% translate 'Customer Statement' %}</span>
+      </a>
+    {% endif %}
+    {% if perms.ap.view_supplierbill %}
+      {% url 'reports_vendor_statement' as u %}
+      <a class="app-card app-ap{% if request.path == u %} app-card-active{% endif %}" href="{{ u }}"
+         data-search="vendor statement supplier ap hutang">
+        <span class="nav-icon nav-icon-sm"><svg><use href="{{ app_icons_url }}#icon-ap" /></svg></span>
+        <span class="nav-label">{% translate 'Vendor Statement' %}</span>
+      </a>
+    {% endif %}
+    {% if perms.core.view_user %}
+      {% url 'admin:core_user_changelist' as u %}
+      <a class="app-card app-auth{% if request.path == u %} app-card-active{% endif %}" href="{{ u }}"
+         data-search="user akun login akses role perusahaan">
+        <span class="nav-icon nav-icon-sm"><svg><use href="{{ app_icons_url }}#icon-auth" /></svg></span>
+        <span class="nav-label">{% translate 'User' %}</span>
+      </a>
+    {% endif %}
+    {% if user.is_superuser %}
+      {% url 'core_database_backup' as u %}
+      <a class="app-card app-core{% if request.path == u %} app-card-active{% endif %}" href="{{ u }}"
+         data-search="backup restore database cadangan pulihkan">
+        <span class="nav-icon nav-icon-sm"><svg><use href="{{ app_icons_url }}#icon-core" /></svg></span>
+        <span class="nav-label">{% translate 'Backup & Restore' %}</span>
+      </a>
+    {% endif %}
+  </div>
+</section>

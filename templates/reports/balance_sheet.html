@@ -1,0 +1,84 @@
+{% extends "reports/base.html" %}
+{% load i18n money %}
+
+{% block report_title %}Balance Sheet{% endblock %}
+{% block report_period %}<p class="text-sm text-slate-500">Per {{ as_of }}</p>{% endblock %}
+
+{% block report_content %}
+{% if data %}
+<div class="kpi-grid mb-6">
+    <div class="kpi-card"><div class="kpi-label">{% translate 'Total Assets' %}</div><div class="kpi-value">{{ data.total_assets|money }}</div></div>
+    <div class="kpi-card"><div class="kpi-label">{% translate 'Total Liabilities' %}</div><div class="kpi-value">{{ data.total_liabilities|money }}</div></div>
+    <div class="kpi-card"><div class="kpi-label">{% translate 'Total Equity' %}</div><div class="kpi-value">{{ data.total_equity|money }}</div><div class="kpi-sub">{% translate 'Termasuk laba periode berjalan' %}</div></div>
+    <div class="kpi-card">
+        <div class="kpi-label">{% translate 'Check' %}</div>
+        <div class="kpi-value">{% if data.is_balanced %}OK{% else %}ERROR{% endif %}</div>
+        <div class="kpi-sub">{% if data.is_balanced %}<span class="badge-ok">A = L + E</span>{% else %}<span class="badge-bad">{% translate 'Tidak balance' %}</span>{% endif %}</div>
+    </div>
+</div>
+
+<div class="kpi-card mb-4 overflow-x-auto">
+    <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-600">{% translate 'Assets' %}</h2>
+    <table class="report-table">
+        <thead><tr><th>{% translate 'Company' %}</th><th>{% translate 'Account' %}</th><th class="num">{% translate 'Amount' %}</th></tr></thead>
+        <tbody>
+        {% for row in data.assets %}
+            <tr>
+                <td>{{ row.company.display_name }}<span class="report-sub">{{ row.company.company_code }}</span></td>
+                <td><span class="font-mono text-xs text-slate-500">{{ row.account.account_code }}</span> {{ row.account.account_name }}</td>
+                <td class="num">{{ row.amount|money }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="3" class="text-slate-400">-</td></tr>
+        {% endfor %}
+        </tbody>
+        <tfoot><tr class="report-total"><td colspan="2">{% translate 'TOTAL ASSETS' %}</td><td class="num">{{ data.total_assets|money }}</td></tr></tfoot>
+    </table>
+</div>
+
+<div class="kpi-card mb-4 overflow-x-auto">
+    <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-600">{% translate 'Liabilities' %}</h2>
+    <table class="report-table">
+        <thead><tr><th>{% translate 'Company' %}</th><th>{% translate 'Account' %}</th><th class="num">{% translate 'Amount' %}</th></tr></thead>
+        <tbody>
+        {% for row in data.liabilities %}
+            <tr>
+                <td>{{ row.company.display_name }}<span class="report-sub">{{ row.company.company_code }}</span></td>
+                <td><span class="font-mono text-xs text-slate-500">{{ row.account.account_code }}</span> {{ row.account.account_name }}</td>
+                <td class="num">{{ row.credit_balance|money }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="3" class="text-slate-400">-</td></tr>
+        {% endfor %}
+        </tbody>
+        <tfoot><tr class="report-total"><td colspan="2">{% translate 'TOTAL LIABILITIES' %}</td><td class="num">{{ data.total_liabilities|money }}</td></tr></tfoot>
+    </table>
+</div>
+
+<div class="kpi-card mb-4 overflow-x-auto">
+    <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-600">{% translate 'Equity' %}</h2>
+    <table class="report-table">
+        <thead><tr><th>{% translate 'Company' %}</th><th>{% translate 'Account' %}</th><th class="num">{% translate 'Amount' %}</th></tr></thead>
+        <tbody>
+        {% for row in data.equity %}
+            <tr>
+                <td>{{ row.company.display_name }}<span class="report-sub">{{ row.company.company_code }}</span></td>
+                <td><span class="font-mono text-xs text-slate-500">{{ row.account.account_code }}</span> {{ row.account.account_name }}</td>
+                <td class="num">{{ row.credit_balance|money }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="3" class="text-slate-400">-</td></tr>
+        {% endfor %}
+        <tr>
+            <td>Laba ditahan (periode berjalan)</td>
+            <td class="text-slate-400">Retained / Current Profit</td>
+            <td class="num">{{ data.retained_profit|money }}</td>
+        </tr>
+        </tbody>
+        <tfoot><tr class="report-total"><td colspan="2">{% translate 'TOTAL EQUITY' %}</td><td class="num">{{ data.total_equity|money }}</td></tr></tfoot>
+    </table>
+</div>
+{% else %}
+<div class="kpi-card"><p class="text-slate-600">Pilih company terlebih dahulu.</p></div>
+{% endif %}
+{% endblock %}

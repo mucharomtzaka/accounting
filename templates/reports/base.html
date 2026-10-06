@@ -1,0 +1,74 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block title %}Accounting &amp; Finance - {% block page_heading %}Report{% endblock %}{% endblock %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{{ report_css_url|default:'/static/css/dist/styles.css' }}">
+  <link rel="stylesheet" href="{% static 'css/report-print.css' %}?v={{ admin_css_v }}">
+  <style>
+    /* report pages pakai Tailwind component kita, bukan skin admin */
+    #content .report-filter,
+    #content .kpi-grid,
+    #content .report-table { font-family: inherit; }
+    #content h1, #content h2 { text-transform: none; letter-spacing: normal; }
+  </style>
+{% endblock %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <script src="{% static 'js/report-tools.js' %}?v={{ admin_css_v }}" defer></script>
+{% endblock %}
+
+{% block content_title %}<h1>{% block report_title %}Financial Report{% endblock %}</h1>{% endblock %}
+
+{% block content %}
+  <div id="report-body">
+    {% include "reports/_doc_header.html" %}
+    {% comment %}
+        Tombol print & export untuk semua halaman report. Export ditulis dari
+        tabel yang benar-benar tampil (static/js/report-tools.js) supaya angka
+        hasil export sama dengan yang dibaca user, tanpa satu spec per view.
+    {% endcomment %}
+    <div class="report-actions">
+      <button type="button" class="button report-export-btn">{% translate 'Excel (CSV)' %}</button>
+      <button type="button" class="button report-print-btn">{% translate 'Print' %}</button>
+    </div>
+    {% block report_period %}{% endblock %}
+
+    {% block report_nav %}
+    <nav style="margin:12px 0">
+      <a href="{% url 'reports_dashboard' %}">{% translate 'Dashboard' %}</a> |
+      <a href="{% url 'reports_trial_balance' %}">{% translate 'Trial Balance' %}</a> |
+      <a href="{% url 'reports_profit_loss' %}">P&amp;L</a> |
+      <a href="{% url 'reports_balance_sheet' %}">{% translate 'Balance Sheet' %}</a> |
+      <a href="{% url 'reports_cash_flow' %}">{% translate 'Cash Flow' %}</a> |
+      <a href="{% url 'reports_general_ledger' %}">{% translate 'General Ledger' %}</a> |
+      <a href="{% url 'reports_balance_comparison' %}">{% translate 'Comparative Balance' %}</a> |
+      <a href="{% url 'reports_aging' %}">AR/AP Aging</a> |
+      <a href="{% url 'reports_company_comparison' %}">{% translate 'Company Comparison' %}</a> |
+      <a href="{% url 'reports_consolidated' %}">{% translate 'Consolidated' %}</a> |
+      <a href="{% url 'reports_project_profitability' %}">{% translate 'Project' %}</a> |
+      <a href="{% url 'reports_budget_vs_actual' %}">{% translate 'Budget vs Actual' %}</a> |
+      <a href="{% url 'reports_cost_accounting' %}">{% translate 'Cost Accounting' %}</a> |
+      <a href="{% url 'reports_product_profitability' %}">{% translate 'Product' %}</a> |
+      <a href="{% url 'reports_customer_statement' %}">{% translate 'Customer Statement' %}</a> |
+      <a href="{% url 'reports_vendor_statement' %}">{% translate 'Vendor Statement' %}</a>
+    </nav>
+    {% endblock %}
+
+    {% block report_filter %}
+    {% if all_companies.count > 1 %}
+    <form method="get" class="report-filter">
+      {% include "reports/_company_select.html" %}
+      <label>{% translate 'Dari' %}<input type="date" name="start" value="{{ start }}"></label>
+      <label>{% translate 'Sampai' %}<input type="date" name="end" value="{{ end }}"></label>
+      <button type="submit" class="btn-apply">{% translate 'Terapkan' %}</button>
+    </form>
+    {% endif %}
+    {% endblock %}
+
+    {% block report_content %}{% endblock %}
+  </div>
+{% endblock %}

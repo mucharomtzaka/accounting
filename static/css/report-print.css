@@ -1,0 +1,34 @@
+/* Kop dokumen + tombol print/export untuk halaman report.
+   Dimuat dari templates/reports/base.html; rules @media print disembunyikan
+   oleh skin admin, jadi ditulis ulang di sini. */
+
+.report-doc-header { margin-bottom: 10px; padding-bottom: 8px;
+                     border-bottom: 1px solid var(--hairline-color); }
+.report-doc-company { display: flex; flex-wrap: wrap; align-items: baseline;
+                      gap: 8px; font-size: 14px; }
+.report-doc-company strong { font-size: 15px; }
+.report-doc-company span { font-size: 12px; color: var(--body-quiet-color); }
+.report-doc-meta { margin-top: 2px; font-size: 12px; color: var(--body-quiet-color); }
+
+.report-actions { display: flex; justify-content: flex-end; gap: 8px; margin-bottom: 12px; }
+
+@media print {
+  /* Navigasi & kendali tidak ada gunanya di kertas. */
+  #header, #nav-global, .breadcrumbs, #user-tools, #footer, .object-tools,
+  #logout-form, .nav-sidebar, .report-actions, .report-filter, .menu-search {
+    display: none !important;
+  }
+  #content { padding: 0 !important; margin: 0 !important; }
+  .dashboard #content, #content-main { width: auto !important; max-width: none !important; float: none !important; }
+
+  .report-doc-header { border-bottom: 2px solid #000; margin-bottom: 14px; }
+  .report-doc-company { font-size: 15pt; }
+  .report-doc-meta { font-size: 9pt; }
+
+  /* Baris tidak boleh terbelah antar halaman; header tabel berulang. */
+  tr, .kpi-card, .report-total { page-break-inside: avoid; }
+  thead { display: table-header-group; }
+  table { page-break-inside: auto; }
+  a[href]::after { content: ""; }
+  .report-table { font-size: 9pt; }
+}

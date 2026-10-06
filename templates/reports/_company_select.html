@@ -1,0 +1,16 @@
+{% load i18n %}
+{% comment %}
+Filter company dipakai bersama base.html dan tiap halaman yang punya form
+filter sendiri, supaya company tidak hilang saat form dikirim.
+{% endcomment %}
+{% if all_companies.count > 1 %}
+<div>
+    <label for="report-company">{% translate 'Company' %}</label>
+    <select name="company" id="report-company">
+        <option value="">{% translate 'Semua Company' %}</option>
+        {% for c in all_companies %}
+        <option value="{{ c.pk }}" {% if c.pk|stringformat:"s" == request.GET.company %}selected{% endif %}>{{ c.company_code }} - {{ c.display_name }}</option>
+        {% endfor %}
+    </select>
+</div>
+{% endif %}
