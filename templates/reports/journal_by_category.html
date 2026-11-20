@@ -1,0 +1,69 @@
+{% extends "reports/base.html" %}
+{% load i18n money %}
+
+{% block report_title %}Jurnal per Kategori{% endblock %}
+{% block report_period %}<p class="text-sm text-slate-500">Periode {{ start }} s/d {{ end }}</p>{% endblock %}
+
+{% block report_content %}
+<form method="get" class="report-filter">
+    {% include "reports/_company_select.html" %}
+    <div>
+        <label for="jc-category">Kategori</label>
+        <select name="category" id="jc-category">
+            <option value="">-- semua kategori --</option>
+            {% for code, label in categories %}
+            <option value="{{ code }}" {% if code == category %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div><label for="jc-start">Dari</label><input type="date" name="start" id="jc-start" value="{{ start }}"></div>
+    <div><label for="jc-end">Sampai</label><input type="date" name="end" id="jc-end" value="{{ end }}"></div>
+    <button type="submit" class="btn-apply">Tampilkan</button>
+</form>
+
+{% for group in groups %}
+<div class="kpi-card overflow-x-auto">
+    <h2 class="mb-3 text-sm font-semibold">
+        {{ group.label }}
+        <span class="text-xs font-normal text-slate-500">({{ group.rows|length }} jurnal)</span>
+    </h2>
+    <table class="report-table">
+        <thead>
+            <tr>
+                <th>Tanggal</th>
+                <th>Journal</th>
+                <th>Company</th>
+                <th>Source</th>
+                <th>Deskripsi</th>
+                <th class="num">Debit</th>
+                <th class="num">Credit</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in group.rows %}
+            <tr>
+                <td>{{ row.journal.journal_date|date:"d M Y" }}</td>
+                <td class="font-mono text-xs">{{ row.journal.journal_number }}</td>
+                <td>{{ row.journal.company.company_code }}</td>
+                <td class="text-xs text-slate-500">{{ row.journal.get_source_display }}</td>
+                <td>{{ row.journal.description|default:"-" }}</td>
+                <td class="num">{{ row.debit|money }}</td>
+                <td class="num">{{ row.credit|money }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" class="py-6 text-center text-slate-400">Belum ada jurnal posted pada kategori ini.</td></tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr class="report-total">
+                <td colspan="5">TOTAL {{ group.label }}</td>
+                <td class="num">{{ group.total_debit|money }}</td>
+                <td class="num">{{ group.total_credit|money }}</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+{% empty %}
+<div class="kpi-card"><p class="text-slate-600">Pilih company dan periode untuk melihat jurnal per kategori.</p></div>
+{% endfor %}
+{% endblock %}

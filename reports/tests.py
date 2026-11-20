@@ -208,6 +208,7 @@ class ReportDocumentToolsTests(TestCase):
         'reports_project_profitability', 'reports_budget_vs_actual',
         'reports_cost_accounting', 'reports_product_profitability',
         'reports_customer_statement', 'reports_vendor_statement',
+        'reports_journal_by_category',
     ]
 
     def setUp(self):
@@ -430,6 +431,68 @@ class DashboardPeriodFilterTests(TestCase):
         self.assertIn('Periode 1 Jan. 2026 s/d 31 Jan. 2026', html)
 
 
+
+
+class JournalByCategoryTests(TestCase):
+    """Jurnal umum dipisah per kategori internal perusahaan / pajak."""
+
+    def setUp(self):
+        group = Group.objects.create(name='Grup JC', code='GJC')
+        self.company = Company.objects.create(
+            company_code='JC', legal_name='PT JC', display_name='PT JC', group=group)
+        Currency.objects.create(code='IDR', name='Rupiah', symbol='Rp')
+        self.user = User.objects.create_user('jc', password='pw', is_staff=True)
+        UserCompanyAccess.objects.create(user=self.user, company=self.company)
+        self.client.force_login(self.user)
+
+        from gl.models import Account, AccountCategory, AccountingPeriod, FiscalYear
+
+        self.cash = Account.objects.create(
+            company=self.company, account_code='1101', account_name='Kas',
+            account_category=AccountCategory.ASSET, account_type='CASH',
+            normal_balance='D', is_postable=True)
+        self.revenue = Account.objects.create(
+            company=self.company, account_code='4101', account_name='Penjualan',
+            account_category=AccountCategory.REVENUE, account_type='PRODUCT_REVENUE',
+            normal_balance='C', is_postable=True)
+        fy = FiscalYear.objects.create(
+            company=self.company, name='2026', start_date='2026-01-01', end_date='2026-12-31')
+        self.period = AccountingPeriod.objects.create(
+            company=self.company, fiscal_year=fy, period_code='2026-10',
+            period_name='Oktober 2026', start_date='2026-10-01', end_date='2026-10-31')
+
+    def _journal(self, number, category):
+        from gl.models import JournalEntry, JournalLine, JournalStatus
+
+        journal = JournalEntry.objects.create(
+            company=self.company, period=self.period, journal_number=number,
+            journal_date='2026-10-10', source='MANUAL', category=category,
+            status=JournalStatus.POSTED)
+        JournalLine.objects.create(journal=journal, line_no=10, account=self.cash,
+                                   debit=Decimal('100'), credit=Decimal('0'))
+        JournalLine.objects.create(journal=journal, line_no=20, account=self.revenue,
+                                   debit=Decimal('0'), credit=Decimal('100'))
+        return journal
+
+    def test_dipisah_per_kategori_dan_tampil_di_report(self):
+        from gl.models import JournalCategory
+        from reports import engine
+
+        self._journal('INT-001', JournalCategory.INTERNAL)
+        self._journal('TAX-001', JournalCategory.TAX)
+
+        groups = engine.journal_by_category(Company.objects.filter(pk=self.company.pk))
+        by_key = {g['key']: g for g in groups}
+        self.assertEqual(len(by_key['INTERNAL']['rows']), 1)
+        self.assertEqual(by_key['INTERNAL']['rows'][0]['journal'].journal_number, 'INT-001')
+        self.assertEqual(by_key['TAX']['rows'][0]['journal'].journal_number, 'TAX-001')
+        self.assertEqual(by_key['TAX']['total_debit'], Decimal('100'))
+
+        html = self.client.get(reverse('reports_journal_by_category')).content.decode()
+        self.assertIn('Internal Perusahaan', html)
+        self.assertIn('Pajak', html)
+        self.assertIn('INT-001', html)
+        self.assertIn('TAX-001', html)
 
 
 class BalanceComparisonTests(TestCase):

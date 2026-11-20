@@ -5,7 +5,7 @@ from decimal import Decimal
 
 from django.db.models import F, Sum
 
-from gl.models import Account, AccountCategory, JournalLine, JournalStatus
+from gl.models import Account, AccountCategory, JournalCategory, JournalEntry, JournalLine, JournalStatus
 
 POSTED = [JournalStatus.POSTED, JournalStatus.RECONCILED]
 
@@ -21,6 +21,36 @@ def _lines(companies, start=None, end=None, branch=None, department=None, cost_c
         if value:
             qs = qs.filter(**{f'journal__{field}': value})
     return qs
+
+
+def journal_by_category(companies, start=None, end=None, category=None):
+    """Daftar jurnal posted per kategori: internal perusahaan / pajak."""
+    qs = JournalEntry.objects.filter(
+        company__in=companies, status__in=POSTED,
+    ).select_related('company', 'period').prefetch_related('lines')
+    if start:
+        qs = qs.filter(journal_date__gte=start)
+    if end:
+        qs = qs.filter(journal_date__lte=end)
+    if category:
+        qs = qs.filter(category=category)
+
+    groups = []
+    for key, label in JournalCategory.choices:
+        if category and key != category:
+            continue
+        rows, total_debit, total_credit = [], Decimal('0'), Decimal('0')
+        for journal in qs.filter(category=key).order_by('journal_date', 'journal_number'):
+            debit = sum((line.debit for line in journal.lines.all()), Decimal('0'))
+            credit = sum((line.credit for line in journal.lines.all()), Decimal('0'))
+            rows.append({'journal': journal, 'debit': debit, 'credit': credit})
+            total_debit += debit
+            total_credit += credit
+        groups.append({
+            'key': key, 'label': label, 'rows': rows,
+            'total_debit': total_debit, 'total_credit': total_credit,
+        })
+    return groups
 
 
 def trial_balance(companies, start=None, end=None, **dims):

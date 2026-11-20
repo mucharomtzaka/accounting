@@ -11,7 +11,12 @@ from django.utils.dateparse import parse_date
 from django.utils.translation import gettext_lazy
 
 from . import csv_io
-from .engine import AccountingError, PeriodLockedError, UnbalancedJournalError, reverse_journal
+from .engine import (
+    AccountingError, JournalBuilder, PeriodLockedError, UnbalancedJournalError, get_period,
+    reverse_journal,
+)
+from django import forms
+
 from .models import (
     Account, AccountCategory, AccountMapping, AccountingPeriod, FiscalYear,
     JournalEntry, JournalLine, JournalStatus, JournalTemplate, JournalTemplateLine,
@@ -574,13 +579,42 @@ class AccountingPeriodAdmin(ChangeOnlyActionsMixin, CompanyScopedFiltersMixin, C
         self.message_user(request, f'{count} period dibuka kembali.')
 
 
+class JournalEntryForm(forms.ModelForm):
+    """Form input jurnal umum - period & nomor jurnal dihitung dari tanggal."""
+
+    class Meta:
+        model = JournalEntry
+        fields = [
+            'company', 'branch', 'department', 'cost_center', 'project',
+            'journal_date', 'source', 'category', 'currency', 'exchange_rate',
+            'description', 'reference',
+        ]
+
+    def clean(self):
+        cleaned = super().clean()
+        company = cleaned.get('company')
+        journal_date = cleaned.get('journal_date')
+        if company and journal_date:
+            try:
+                period = get_period(company, journal_date)
+            except AccountingError as exc:
+                raise forms.ValidationError(str(exc))
+            if period.is_locked:
+                raise forms.ValidationError(
+                    f'Period {period.period_code} CLOSED. Reopen period dulu.')
+            self.period = period
+        return cleaned
+
+
 @admin.register(JournalEntry)
 class JournalEntryAdmin(ChangeOnlyActionsMixin, CompanyScopedFiltersMixin, CompanyScopedFormMixin, admin.ModelAdmin):
+    form = JournalEntryForm
+    fields = JournalEntryForm.Meta.fields
     list_display = [
-        'journal_number', 'journal_date', 'company', 'source', 'status', 'is_reversed',
+        'journal_number', 'journal_date', 'company', 'source', 'category', 'status', 'is_reversed',
         'total_debit', 'total_credit', 'balance_check', 'description',
     ]
-    list_filter = ['company', 'status', 'source', 'journal_date']
+    list_filter = ['company', 'status', 'source', 'category', 'journal_date']
     search_fields = ['journal_number', 'description', 'reference']
     date_hierarchy = 'journal_date'
     inlines = [JournalLineInline]
@@ -599,8 +633,14 @@ class JournalEntryAdmin(ChangeOnlyActionsMixin, CompanyScopedFiltersMixin, Compa
         qs = qs.filter(company__in=request.user.allowed_companies(request))
         return qs
 
-    def has_add_permission(self, request):
-        return False
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.period = getattr(form, 'period', None) or get_period(obj.company, obj.journal_date)
+            obj.journal_number = JournalBuilder(
+                obj.company, obj.journal_date, source=obj.source, category=obj.category,
+            )._next_number(obj.period)
+            obj.status = JournalStatus.DRAFT
+        super().save_model(request, obj, form, change)
 
     def get_readonly_fields(self, request, obj=None):
         base = list(self.readonly_fields)

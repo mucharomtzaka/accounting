@@ -425,6 +425,27 @@ def customer_statement_report(request):
     })
 
 
+def journal_by_category_report(request):
+    all_companies, companies = _scope(request)
+    from gl.models import JournalCategory
+
+    today = timezone.localdate()
+    start = _date_param(request, 'start', today.replace(month=1, day=1))
+    end = _date_param(request, 'end', today)
+    if start > end:
+        start, end = end, start
+    category = request.GET.get('category') or ''
+    valid = {c[0] for c in JournalCategory.choices}
+    if category not in valid:
+        category = ''
+    groups = engine.journal_by_category(companies, start, end, category) if companies.exists() else []
+    return render(request, 'reports/journal_by_category.html', {
+        'all_companies': all_companies, 'companies': companies,
+        'groups': groups, 'start': start, 'end': end,
+        'category': category, 'categories': JournalCategory.choices,
+    })
+
+
 def vendor_statement_report(request):
     from ap.models import Supplier
     from reports.cost import vendor_statement

@@ -10,7 +10,7 @@ from .errors import (
     AccountingError, PeriodLockedError, UnbalancedJournalError, PeriodNotFoundError,
 )
 from .models import (
-    Account, AccountMapping, AccountingPeriod, JournalEntry, JournalLine, JournalSource, JournalStatus,
+    Account, AccountMapping, AccountingPeriod, JournalCategory, JournalEntry, JournalLine, JournalSource, JournalStatus,
 )
 
 
@@ -42,10 +42,13 @@ class JournalBuilder:
 
     def __init__(self, company, journal_date, source=JournalSource.MANUAL, description='',
                  currency='IDR', exchange_rate=Decimal('1'), branch=None, department=None,
-                 cost_center=None, project=None, reference='', user=None):
+                 cost_center=None, project=None, reference='', user=None, category=None):
         self.company = company
         self.journal_date = journal_date
         self.source = source
+        self.category = category or (
+            JournalCategory.TAX if source == JournalSource.TAX else JournalCategory.INTERNAL
+        )
         self.description = description
         self.currency = currency
         self.exchange_rate = Decimal(exchange_rate or 1)
@@ -105,6 +108,7 @@ class JournalBuilder:
                 journal_number=self._next_number(period),
                 journal_date=self.journal_date,
                 source=self.source,
+                category=self.category,
                 status=status,
                 currency_id=self.currency,
                 exchange_rate=self.exchange_rate,
@@ -169,6 +173,7 @@ def reverse_journal(journal, user=None, reason='', on_date=None):
         company=journal.company,
         journal_date=on_date or date.today(),
         source=journal.source,
+        category=journal.category,
         description=f'Reversal: {journal.description or journal.journal_number}',
         currency=journal.currency_id,
         exchange_rate=journal.exchange_rate,

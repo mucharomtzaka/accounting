@@ -89,6 +89,8 @@ urlpatterns += i18n_patterns(
          name='reports_customer_statement'),
     path('admin/reports/vendor-statement/', admin_view(report_views.vendor_statement_report),
          name='reports_vendor_statement'),
+    path('admin/reports/journal-by-category/', admin_view(report_views.journal_by_category_report),
+         name='reports_journal_by_category'),
     path('admin/core/company/switch/', admin_view(core_views.switch_company), name='core_switch_company'),
     path('admin/database-backup/', admin_view(core_views.database_backup), name='core_database_backup'),
     path('admin/database-backup/download/', admin_view(core_views.database_download), name='core_database_download'),

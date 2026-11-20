@@ -142,6 +142,11 @@ class AccountingPeriod(TimeStampedModel):
         return self.start_date <= date <= self.end_date
 
 
+class JournalCategory(models.TextChoices):
+    INTERNAL = 'INTERNAL', 'Internal Perusahaan'
+    TAX = 'TAX', 'Pajak'
+
+
 class JournalSource(models.TextChoices):
     MANUAL = 'MANUAL', 'Manual Journal'
     SALES_INVOICE = 'SALES_INVOICE', 'Sales Invoice'
@@ -187,6 +192,10 @@ class JournalEntry(TimeStampedModel, AuditMixin):
     journal_number = models.CharField(max_length=30)
     journal_date = models.DateField()
     source = models.CharField(max_length=20, choices=JournalSource.choices, default=JournalSource.MANUAL)
+    category = models.CharField(
+        max_length=10, choices=JournalCategory.choices, default=JournalCategory.INTERNAL,
+        help_text='Internal perusahaan atau pajak - dasar laporan kategori jurnal.',
+    )
     status = models.CharField(max_length=12, choices=JournalStatus.choices, default=JournalStatus.DRAFT)
     currency = models.ForeignKey(
         'core.Currency', on_delete=models.PROTECT, default='IDR', related_name='journal_entries'

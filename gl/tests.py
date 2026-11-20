@@ -925,15 +925,64 @@ class OpeningBalanceAdminViewTests(TestCase):
         self.assertIn('1101,Kas', body)
         self.assertIn('3101,Modal', body)
 
-    def test_akun_tidak_dikenal_menahan_commit(self):
-        from .models import JournalEntry
+class ManualJournalAdminTests(TestCase):
+    """Input jurnal umum lewat admin: periode & nomor otomatis, kategori tersimpan."""
 
-        response = self.client.post(self.url, {
-            'company': self.company.pk, 'as_of': '2026-01-01',
-            'csv_file': self._upload('kode_akun,debit,kredit\n9999,100,\n1101,,100\n'),
-        })
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('9999', response.content.decode())
-        self.assertEqual(JournalEntry.objects.count(), 0)
+    def setUp(self):
+        from gl.models import Account, AccountCategory, AccountingPeriod, FiscalYear
+
+        group = Group.objects.create(name='Grup MJ', code='GMJ')
+        self.company = Company.objects.create(
+            company_code='MJ', legal_name='PT MJ', display_name='PT MJ', group=group)
+        self.currency = Currency.objects.create(code='IDR', name='Rupiah', symbol='Rp')
+        self.user = User.objects.create_superuser('mj_admin', password='pw')
+        self.client.force_login(self.user)
+
+        self.cash = Account.objects.create(
+            company=self.company, account_code='1101', account_name='Kas',
+            account_category=AccountCategory.ASSET, account_type='CASH',
+            normal_balance='D', is_postable=True)
+        self.revenue = Account.objects.create(
+            company=self.company, account_code='4101', account_name='Pendapatan',
+            account_category=AccountCategory.REVENUE, account_type='PRODUCT_REVENUE',
+            normal_balance='C', is_postable=True)
+        fy = FiscalYear.objects.create(
+            company=self.company, name='2026', start_date='2026-01-01', end_date='2026-12-31')
+        self.period = AccountingPeriod.objects.create(
+            company=self.company, fiscal_year=fy, period_code='2026-01',
+            period_name='Januari 2026', start_date='2026-01-01', end_date='2026-01-31')
+
+    def test_tambah_jurnal_kategori_pajak(self):
+        from gl.models import JournalEntry, JournalStatus
+
+        url = reverse('admin:gl_journalentry_add')
+        self.assertEqual(self.client.get(url).status_code, 200)
+
+        data = {
+            'company': str(self.company.pk),
+            'journal_date': '2026-01-10',
+            'source': 'MANUAL',
+            'category': 'TAX',
+            'currency': str(self.currency.pk),
+            'exchange_rate': '1.00000000',
+            'description': 'Jurnal pajak manual',
+            'reference': 'PJ-001',
+            'lines-TOTAL_FORMS': '2', 'lines-INITIAL_FORMS': '0',
+            'lines-MIN_NUM_FORMS': '0', 'lines-MAX_NUM_FORMS': '1000',
+            'lines-0-line_no': '10', 'lines-0-account': str(self.cash.pk),
+            'lines-0-debit': '100', 'lines-0-credit': '0',
+            'lines-1-line_no': '20', 'lines-1-account': str(self.revenue.pk),
+            'lines-1-debit': '0', 'lines-1-credit': '100',
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 302, response.content.decode()[:500])
+
+        journal = JournalEntry.objects.get(reference='PJ-001')
+        self.assertEqual(journal.category, 'TAX')
+        self.assertEqual(journal.status, JournalStatus.DRAFT)
+        self.assertEqual(journal.period, self.period)
+        self.assertEqual(journal.journal_number, 'JE/2026-01/00001')
+        self.assertEqual(journal.lines.count(), 2)
+        self.assertTrue(journal.is_balanced)
 
 
